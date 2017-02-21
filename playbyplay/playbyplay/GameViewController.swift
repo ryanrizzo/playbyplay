@@ -9,11 +9,18 @@
 import UIKit
 
 class GameViewController: ViewController {
+    @IBOutlet weak var leaderboard: UITextView!
+    @IBOutlet weak var last10: UITextView!
+    @IBOutlet weak var diamond: UIImageView!
 
+    var d0 = UIImage(named: "0.png")
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
+        diamond.startAnimating()
+        diamond.image=d0
     }
 
     override func didReceiveMemoryWarning() {
