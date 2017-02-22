@@ -109,7 +109,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LP1-R2-ryk">
-                                <rect key="frame" x="16" y="455" width="157" height="30"/>
+                                <rect key="frame" x="16" y="452" width="157" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" name="AvenirNext-Bold" family="Avenir Next" pointSize="17"/>
@@ -122,13 +122,15 @@
                                 <state key="highlighted" title="OUT">
                                     <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
+                                <state key="focused">
+                                    <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
                                 <connections>
-                                    <action selector="deselectOut:" destination="BYZ-38-t0r" eventType="touchDown" id="lej-l8-4MT"/>
-                                    <action selector="selectedOut:" destination="BYZ-38-t0r" eventType="touchUpInside" id="QlV-qY-dIp"/>
+                                    <action selector="outSelected:" destination="BYZ-38-t0r" eventType="touchUpInside" id="OZd-cP-Hv3"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZAE-QJ-j3r">
-                                <rect key="frame" x="198" y="455" width="161" height="30"/>
+                                <rect key="frame" x="198" y="452" width="161" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" name="AvenirNext-Bold" family="Avenir Next" pointSize="17"/>
@@ -142,8 +144,7 @@
                                     <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
-                                    <action selector="deselectOnBase:" destination="BYZ-38-t0r" eventType="touchDown" id="IOT-A2-RPp"/>
-                                    <action selector="selectedOnBase:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Bfj-zc-WAJ"/>
+                                    <action selector="onBaseSelected:" destination="BYZ-38-t0r" eventType="touchUpInside" id="I4H-ZA-9Nr"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -153,10 +154,9 @@
                         <outlet property="diamond" destination="U6N-m2-2zt" id="HWs-q3-b4A"/>
                         <outlet property="last10" destination="czl-BA-GCV" id="DsZ-Qq-67r"/>
                         <outlet property="leaderboard" destination="JoM-Tl-lDf" id="oc3-XT-AYI"/>
-                        <outlet property="onBaseButton" destination="ZAE-QJ-j3r" id="GJI-A8-bEB"/>
-                        <outlet property="outButton" destination="LP1-R2-ryk" id="EB0-IQ-NQJ"/>
+                        <outlet property="onBaseButton" destination="ZAE-QJ-j3r" id="oTq-dY-hAS"/>
+                        <outlet property="outButton" destination="LP1-R2-ryk" id="4xw-N7-cZO"/>
                         <outlet property="powerups" destination="1QD-bq-qvd" id="zeE-F3-Zcy"/>
-                        <outletCollection property="firstQuestion" destination="ZAE-QJ-j3r" collectionClass="NSMutableArray" id="bbG-Ii-Yqi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

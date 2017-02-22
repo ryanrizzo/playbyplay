@@ -14,14 +14,15 @@ class GameViewController: ViewController {
     @IBOutlet weak var diamond: UIImageView!
     @IBOutlet weak var powerups: UIImageView!
     @IBOutlet weak var outButton: UIButton!
-    @IBOutlet weak var onBaseButton: UIButton!
-    @IBOutlet var firstQuestion: [UIButton]!
     
+    @IBOutlet weak var onBaseButton: UIButton!
     
     
     var d0 = UIImage(named: "0.png")
     var allpups = UIImage(named: "allpups.png")
     var loadDiamondArray: [UIImage] = [ UIImage(named: "1.png")!, UIImage(named: "2.png")!,UIImage(named: "3.png")!, UIImage(named: "4.png")!,]
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,32 +36,46 @@ class GameViewController: ViewController {
         
         
         powerups.image=allpups
+
+    }
+
+    @IBAction func outSelected(_ sender: Any) {
+        if(!outButton.isSelected){
+            outButton.isSelected = true
+            outButton.backgroundColor=UIColor.yellow
+            showSecondQsForOut()
+        }else{
+            outButton.isSelected = false
+            outButton.backgroundColor=UIColor.darkGray
+        }
+        if(onBaseButton.isSelected){
+            onBaseButton.isSelected = false
+            onBaseButton.backgroundColor=UIColor.darkGray
+        }
+    }
+    @IBAction func onBaseSelected(_ sender: Any) {
+            if(!onBaseButton.isSelected){
+                onBaseButton.isSelected = true
+                onBaseButton.backgroundColor=UIColor.yellow
+                showSecondQsForOnBase()
+            }else{
+                onBaseButton.isSelected = false
+                onBaseButton.backgroundColor=UIColor.darkGray
+            }
+        if(outButton.isSelected){
+            outButton.isSelected = false
+            outButton.backgroundColor=UIColor.darkGray
+        }
         
-        firstQuestion.append(outButton)
-        firstQuestion.append(onBaseButton)
     }
     
-    
-    
-
-    @IBAction func selectedOut(_ sender: UIButton) {
-        outButton.backgroundColor = UIColor.yellow
-        outButton.titleLabel?.textColor=UIColor.black
-    }
-    @IBAction func deselectOut(_ sender: UIButton) {
-        outButton.backgroundColor = UIColor.darkGray
-        outButton.titleLabel?.textColor=UIColor.white
+    func showSecondQsForOnBase(){
+        
     }
 
-    @IBAction func selectedOnBase(_ sender: UIButton) {
-        onBaseButton.backgroundColor = UIColor.yellow
-        onBaseButton.titleLabel?.textColor=UIColor.black
+    func showSecondQsForOut(){
+        
     }
-    @IBAction func deselectOnBase(_ sender: UIButton) {
-        onBaseButton.backgroundColor = UIColor.darkGray
-        onBaseButton.titleLabel?.textColor=UIColor.white
-    }
-
 
     override func viewDidAppear(_ animated: Bool) {
         diamond.startAnimating()
