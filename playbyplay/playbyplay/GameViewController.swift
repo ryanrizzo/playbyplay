@@ -23,6 +23,8 @@ class GameViewController: ViewController {
     var allpups = UIImage(named: "allpups.png")
     var loadDiamondArray: [UIImage] = [ UIImage(named: "1.png")!, UIImage(named: "2.png")!,UIImage(named: "3.png")!, UIImage(named: "4.png")!,]
     
+    var loadPupArray: [UIImage] = [ UIImage(named: "nopups.png")!, UIImage(named: "1pups.png")!,UIImage(named: "12pups.png")!, UIImage(named: "allpups.png")!,]
+    
     let singleButton = UIButton()
     let nonSingleButton = UIButton()
     
@@ -38,14 +40,19 @@ class GameViewController: ViewController {
     let doubleButton = UIButton()
     let tripleHomerButton = UIButton()
     
-    let overButton = UIButton()
-    let underButton = UIButton()
+    let overLButton = UIButton()
+    let underLButton = UIButton()
+    
+    let overRButton = UIButton()
+    let underRButton = UIButton()
     
     let rightSideButton = UIButton()
     let leftSideButton = UIButton()
     
     let lfrfButton = UIButton()
     let cfButton = UIButton()
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,8 +65,28 @@ class GameViewController: ViewController {
         
         
         
-        powerups.image=allpups
+        powerups.animationImages = loadPupArray
+        powerups.animationDuration = 0.65
+        powerups.animationRepeatCount = 1
 
+    }
+    
+    
+    override func viewDidAppear(_ animated: Bool) {
+        diamond.startAnimating()
+        self.perform(#selector(GameViewController.afterAnimation), with: nil, afterDelay: diamond.animationDuration)
+        powerups.startAnimating()
+    }
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    func afterAnimation() {
+        diamond.stopAnimating()
+        powerups.stopAnimating()
+        diamond.image = d0;
+        powerups.image = allpups;
     }
 
     @IBAction func groundoutSelected(_ sender: Any) {
@@ -192,8 +219,14 @@ class GameViewController: ViewController {
     func hideSecondQsForOnBase(){
         singleButton.isHidden=true
         nonSingleButton.isHidden=true
-        hideThirdQsForSingle()
-        hideThirdQsForNonSingle()
+        
+        //hides only the buttons that have been created
+        if(singleButton.isSelected){
+            hideThirdQsForSingle()
+        }
+        if(nonSingleButton.isSelected){
+            hideThirdQsForNonSingle()
+        }
     }
     
     func singleSelected(_ sender: UIButton){
@@ -255,7 +288,7 @@ class GameViewController: ViewController {
         }else{
             
             initiateButtonRow3(event: "Double",button: doubleButton, action: #selector(GameViewController.doubleSelected(_:)), spot: 1)
-            initiateButtonRow3(event: "Home Run or 3B",button: tripleHomerButton, action: #selector(GameViewController.tripleHomerSelected(_:)), spot: 2)
+            initiateButtonRow3(event: "Home Run/3B/BB",button: tripleHomerButton, action: #selector(GameViewController.tripleHomerSelected(_:)), spot: 2)
         }
     }
     
@@ -281,18 +314,22 @@ class GameViewController: ViewController {
     func doubleSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: doubleButton, otherButton: tripleHomerButton)
+        hideNonSelected()
     }
     func tripleHomerSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: tripleHomerButton, otherButton: doubleButton)
+        hideNonSelected()
     }
     func airSingleSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: airSingleButton, otherButton: groundSingleButton)
+        hideNonSelected()
     }
     func groundSingleSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: groundSingleButton, otherButton: airSingleButton)
+        hideNonSelected()
     }
     
     // Airout/K ************************************************************
@@ -317,8 +354,13 @@ class GameViewController: ViewController {
     func hideSecondQsForAiroutK(){
         airoutButton.isHidden = true
         kButton.isHidden = true
-        hideThirdQsForK()
-        hideThirdQsForAirout()
+        //hides only the buttons that have been created
+        if(airoutButton.isSelected){
+            hideThirdQsForAirout()
+        }
+        if(kButton.isSelected){
+            hideThirdQsForK()
+        }
     }
 
     func airoutSelected(_ sender: UIButton){
@@ -362,7 +404,7 @@ class GameViewController: ViewController {
             cfButton.isHidden = false
         }else{
             initiateButtonRow3(event: "LF or RF",button: lfrfButton, action: #selector(GameViewController.lfrfSelected(_:)), spot: 1)
-            initiateButtonRow3(event: "CF / Other",button: cfButton, action: #selector(GameViewController.cfSelected(_:)), spot: 2)
+            initiateButtonRow3(event: "CF/Other",button: cfButton, action: #selector(GameViewController.cfSelected(_:)), spot: 2)
         }
     }
     
@@ -390,18 +432,22 @@ class GameViewController: ViewController {
     func lfrfSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: lfrfButton, otherButton: cfButton)
+        hideNonSelected()
     }
     func cfSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: cfButton, otherButton: lfrfButton)
+        hideNonSelected()
     }
     func kSwingingSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: kSwingingButton, otherButton: kLookingButton)
+        hideNonSelected()
     }
     func kLookingSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: kLookingButton, otherButton: kSwingingButton)
+        hideNonSelected()
     }
 
     
@@ -411,10 +457,14 @@ class GameViewController: ViewController {
         if(leftSideButton.isHidden || rightSideButton.isHidden){
             leftSideButton.isHidden = false
             rightSideButton.isHidden = false
-            if(leftSideButton.isSelected || rightSideButton.isSelected){
-                showThirdQsForGroundout()
-                showThirdQsForGroundout()
+            
+            if(leftSideButton.isSelected){
+                showThirdQsForLeftSide()
             }
+            if(rightSideButton.isSelected){
+                showThirdQsForRighttSide()
+            }
+        
         }else{
             initiateButton(event: "Left Side", button: leftSideButton, action: #selector(GameViewController.leftSideSelected(_:)), spot: 1)
             initiateButton(event: "Right Side", button: rightSideButton, action: #selector(GameViewController.rightSideSelected(_:)), spot: 2)
@@ -425,23 +475,31 @@ class GameViewController: ViewController {
     func hideSecondQsForGroundout(){
         leftSideButton.isHidden=true
         rightSideButton.isHidden=true
-        overButton.isHidden=true
-        underButton.isHidden=true
+        
+        //hides only the buttons that have been created
+        if(leftSideButton.isSelected){
+            hideThirdQsForLeftSide()
+        }
+        if(rightSideButton.isSelected){
+            hideThirdQsForRightSide()
+        }
+        
     }
     
     func leftSideSelected(_ sender: UIButton){
         if(!leftSideButton.isSelected){
             leftSideButton.isSelected = true
             leftSideButton.backgroundColor=UIColor.yellow
-            showThirdQsForGroundout()
+            showThirdQsForLeftSide()
         }else{
             leftSideButton.isSelected = false
             leftSideButton.backgroundColor=UIColor.darkGray
-            hideThirdQsForGroundout()
+            hideThirdQsForLeftSide()
         }
         if(rightSideButton.isSelected){
             rightSideButton.isSelected = false
             rightSideButton.backgroundColor=UIColor.darkGray
+            hideThirdQsForRightSide()
         }
     }
     
@@ -449,60 +507,95 @@ class GameViewController: ViewController {
         if(!rightSideButton.isSelected){
             rightSideButton.isSelected = true
             rightSideButton.backgroundColor=UIColor.yellow
-            showThirdQsForGroundout()
+            showThirdQsForRighttSide()
         }else{
             rightSideButton.isSelected = false
             rightSideButton.backgroundColor=UIColor.darkGray
-            hideThirdQsForGroundout()
+            hideThirdQsForRightSide()
         }
         if(leftSideButton.isSelected){
             leftSideButton.isSelected = false
             leftSideButton.backgroundColor=UIColor.darkGray
+            hideThirdQsForLeftSide()
         }
     }
     
     // THIRD ROW Groundout ***************************
     
-    func showThirdQsForGroundout(){
-        if(underButton.isHidden || overButton.isHidden){
-            underButton.isHidden = false
-            overButton.isHidden = false
+    func showThirdQsForLeftSide(){
+        if(underLButton.isHidden || overLButton.isHidden){
+            underLButton.isHidden = false
+            overLButton.isHidden = false
         }else{
-            initiateButtonRow3(event: "Under",button: underButton, action: #selector(GameViewController.underSelected(_:)), spot: 1)
-            initiateButtonRow3(event: "Over",button: overButton, action: #selector(GameViewController.overSelected(_:)), spot: 2)
+            initiateButtonRow3(event: "Under 3.5 pitches",button: underLButton, action: #selector(GameViewController.underLSelected(_:)), spot: 1)
+            initiateButtonRow3(event: "Over 3.5 pitches",button: overLButton, action: #selector(GameViewController.overLSelected(_:)), spot: 2)
         }
     }
     
-    func hideThirdQsForGroundout(){
-        underButton.isHidden=true
-        overButton.isHidden=true
+    func hideThirdQsForLeftSide(){
+        underLButton.isHidden=true
+        overLButton.isHidden=true
     }
     
-    func underSelected(_ sender: UIButton){
-        //SUBMIT PICKS
-        updateButtons(mainButton: underButton, otherButton: overButton)
+    func showThirdQsForRighttSide(){
+        if(underRButton.isHidden || overRButton.isHidden){
+            underRButton.isHidden = false
+            overRButton.isHidden = false
+        }else{
+            initiateButtonRow3(event: "Under 3.5 pitches",button: underRButton, action: #selector(GameViewController.underRSelected(_:)), spot: 1)
+            initiateButtonRow3(event: "Over 3.5 pitches",button: overRButton, action: #selector(GameViewController.overRSelected(_:)), spot: 2)
+        }
     }
-    func overSelected(_ sender: UIButton){
-        //SUBMIT PICKS
-        updateButtons(mainButton: overButton, otherButton: underButton)
+    
+    func hideThirdQsForRightSide(){
+        underRButton.isHidden=true
+        overRButton.isHidden=true
     }
+    
+    func underLSelected(_ sender: UIButton){
+        //SUBMIT PICKS
+        updateButtons(mainButton: underLButton, otherButton: overLButton)
+        hideNonSelected()
+    }
+    func overLSelected(_ sender: UIButton){
+        //SUBMIT PICKS
+        updateButtons(mainButton: overLButton, otherButton: underLButton)
+        hideNonSelected()
+    }
+    func underRSelected(_ sender: UIButton){
+        //SUBMIT PICKS
+        updateButtons(mainButton: underRButton, otherButton: overRButton)
+        hideNonSelected()
+    }
+    func overRSelected(_ sender: UIButton){
+        //SUBMIT PICKS
+        updateButtons(mainButton: overRButton, otherButton: underRButton)
+        hideNonSelected()
+    }
+    
     
     //********************************************************
     
-    override func viewDidAppear(_ animated: Bool) {
-        diamond.startAnimating()
-        self.perform(#selector(GameViewController.afterAnimation), with: nil, afterDelay: diamond.animationDuration)
-        powerups.startAnimating()
+    func hideNonSelected(){
+        let allButtons: [UIButton] = [groundoutButton, airoutKButton, onBaseButton, leftSideButton,rightSideButton,airoutButton,kButton, singleButton,nonSingleButton,overLButton,underLButton,overRButton,underRButton, lfrfButton, cfButton, kSwingingButton, kLookingButton, groundSingleButton, airSingleButton, doubleButton,tripleHomerButton]
+        
+        for button in allButtons {
+            if(!button.isSelected){
+                button.isHidden=true
+                button.isEnabled=false
+            }else{
+                
+                button.backgroundColor = UIColor.darkGray
+                button.setTitleColor(UIColor.yellow, for: .disabled)
+                button.setTitleColor(UIColor.yellow, for: .selected)
+                button.setTitleColor(UIColor.yellow, for: .highlighted)
+                button.setTitleColor(UIColor.yellow, for: .normal)
+                
+                button.isEnabled=false
+            }
+        }
     }
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    func afterAnimation() {
-        diamond.stopAnimating()
-        diamond.image = d0;
-    }
+
 
 
     /*
