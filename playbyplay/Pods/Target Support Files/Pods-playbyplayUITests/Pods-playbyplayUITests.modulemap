@@ -1,0 +1,6 @@
+framework module Pods_playbyplayUITests {
+  umbrella header "Pods-playbyplayUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
