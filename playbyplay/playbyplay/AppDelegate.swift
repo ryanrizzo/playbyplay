@@ -16,7 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     override init() {
         FIRApp.configure()
-        s
     }
     
 

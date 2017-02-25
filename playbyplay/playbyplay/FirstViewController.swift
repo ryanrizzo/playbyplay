@@ -1,14 +1,14 @@
 //
-//  LoginViewController.swift
+//  FirstViewController.swift
 //  playbyplay
 //
-//  Created by Ryan Rizzo on 2/24/17.
+//  Created by Ryan Rizzo on 2/20/17.
 //  Copyright © 2017 Ryan Rizzo. All rights reserved.
 //
 
 import UIKit
 
-class LoginViewController: ViewController {
+class FirstViewController: ViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

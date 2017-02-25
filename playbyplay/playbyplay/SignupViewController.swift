@@ -1,5 +1,5 @@
 //
-//  LoginViewController.swift
+//  SignupViewController.swift
 //  playbyplay
 //
 //  Created by Ryan Rizzo on 2/24/17.
@@ -8,13 +8,15 @@
 
 import UIKit
 
-class LoginViewController: ViewController {
+class SignupViewController: ViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
     }
+    
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
