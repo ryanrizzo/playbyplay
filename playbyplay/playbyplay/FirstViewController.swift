@@ -7,13 +7,30 @@
 //
 
 import UIKit
+import Firebase
 
 class FirstViewController: ViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
+        //try! FIRAuth.auth()!.signOut()
+        FIRAuth.auth()?.addStateDidChangeListener { auth, user in
+            if user != nil {
+                
+                // User is signed in. Show home screen
+                print(user?.email)
+                
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let GVC = storyboard.instantiateViewController(withIdentifier: "GVC")
+                self.present(GVC, animated: true, completion: nil)
+
+            } else {
+                // No User is signed in. Show user the login screen
+            }
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {
