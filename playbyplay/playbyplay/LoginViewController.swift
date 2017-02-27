@@ -16,10 +16,13 @@ class LoginViewController: ViewController {
     
     @IBOutlet weak var loginButton: UIButton!
     
+    var inGame : String = ""
+
+    
+    var ref: FIRDatabaseReference!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-     
         
         // Do any additional setup after loading the view.
     }
@@ -30,10 +33,32 @@ class LoginViewController: ViewController {
                 if FIRAuth.auth()?.currentUser != nil {
                     // User is signed in.
                     
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let GVC = storyboard.instantiateViewController(withIdentifier: "GVC")
-                    self.present(GVC, animated: true, completion: nil)
-                } else {
+                    self.ref = FIRDatabase.database().reference()
+                    let user = FIRAuth.auth()?.currentUser
+                    
+                    self.ref.child("users").child((user?.uid)!).observeSingleEvent(of: .value, with: { (snapshot) in
+                        let value = snapshot.value as? NSDictionary
+                        self.inGame = value?["inGame"] as? String ?? ""
+                        print(self.inGame)
+                    }) { (error) in
+                        print(error.localizedDescription)
+                    }
+
+                    
+                    let inGame = self.ref.child("users").child((user?.uid)!).child("inGame")
+
+                    if(inGame.isEqual("true")){
+                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                        let GVC = storyboard.instantiateViewController(withIdentifier: "GVC")
+                        self.present(GVC, animated: true, completion: nil)
+                    }
+                    else{
+                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                        let MTVC = storyboard.instantiateViewController(withIdentifier: "MTVC")
+                        self.present(MTVC, animated: true, completion: nil)
+                    }
+                    }
+                else {
                     let invalidAlert = UIAlertController(title: "Invalid Entry", message: "Sign Up Failed. Email/Password Incorrect.", preferredStyle: UIAlertControllerStyle.alert)
                     invalidAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
                     self.present(invalidAlert, animated: true, completion: nil)

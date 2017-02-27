@@ -11,27 +11,53 @@ import Firebase
 
 class FirstViewController: ViewController {
 
+    var inGame : String = ""
+    
+    
+    var ref: FIRDatabaseReference!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
         //try! FIRAuth.auth()!.signOut()
-        FIRAuth.auth()?.addStateDidChangeListener { auth, user in
-            if user != nil {
-                
-                // User is signed in. Show home screen
-                print(user?.email)
-                
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let GVC = storyboard.instantiateViewController(withIdentifier: "GVC")
-                self.present(GVC, animated: true, completion: nil)
-
-            } else {
-                // No User is signed in. Show user the login screen
-            }
-        }
         
+        
+        if FIRAuth.auth()?.currentUser != nil {
+            self.ref = FIRDatabase.database().reference()
+            
+            // User is signed in.
+            print(FIRAuth.auth()?.currentUser?.email)
+            let user = FIRAuth.auth()?.currentUser
+            
+            self.ref.child("users").child((user?.uid)!).observeSingleEvent(of: .value, with: { (snapshot) in
+                let value = snapshot.value as? NSDictionary
+                self.inGame = value?["inGame"] as? String ?? ""
+                print(self.inGame)
+                
+                if(self.inGame.isEqual("true")){
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    let GVC = storyboard.instantiateViewController(withIdentifier: "GVC")
+                    self.present(GVC, animated: true, completion: nil)
+                }
+                    
+                else{
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    let MTVC = storyboard.instantiateViewController(withIdentifier: "MTVC")
+                    self.present(MTVC, animated: true, completion: nil)
+                }
+                
+            }) { (error) in
+                print(error.localizedDescription)
+            }
+            
+        }
+
+
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+            }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
