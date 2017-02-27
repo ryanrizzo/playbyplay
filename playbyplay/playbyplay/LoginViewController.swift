@@ -55,7 +55,8 @@ class LoginViewController: ViewController {
                     else{
                         let storyboard = UIStoryboard(name: "Main", bundle: nil)
                         let MTVC = storyboard.instantiateViewController(withIdentifier: "MTVC")
-                        self.present(MTVC, animated: true, completion: nil)
+                        let MNC = UINavigationController(rootViewController: MTVC)
+                        self.present(MNC, animated: true, completion: nil)
                     }
                     }
                 else {

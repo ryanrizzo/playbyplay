@@ -23,8 +23,10 @@ class FirstViewController: ViewController {
         //try! FIRAuth.auth()!.signOut()
         
         
+        
         if FIRAuth.auth()?.currentUser != nil {
             self.ref = FIRDatabase.database().reference()
+            
             
             // User is signed in.
             print(FIRAuth.auth()?.currentUser?.email)
@@ -38,13 +40,15 @@ class FirstViewController: ViewController {
                 if(self.inGame.isEqual("true")){
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
                     let GVC = storyboard.instantiateViewController(withIdentifier: "GVC")
+                    
                     self.present(GVC, animated: true, completion: nil)
                 }
                     
                 else{
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
                     let MTVC = storyboard.instantiateViewController(withIdentifier: "MTVC")
-                    self.present(MTVC, animated: true, completion: nil)
+                    let MNC = UINavigationController(rootViewController: MTVC)
+                    self.present(MNC, animated: true, completion: nil)
                 }
                 
             }) { (error) in

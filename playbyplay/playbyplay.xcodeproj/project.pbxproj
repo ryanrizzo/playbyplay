@@ -47,6 +47,7 @@
 		15A19D891E61342E00839B51 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A19D881E61342E00839B51 /* LoginViewController.swift */; };
 		15A19D8B1E61343D00839B51 /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A19D8A1E61343D00839B51 /* SignupViewController.swift */; };
 		15A19D8F1E632E8000839B51 /* MenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A19D8E1E632E8000839B51 /* MenuTableViewController.swift */; };
+		15A19D911E64C5CC00839B51 /* MenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A19D901E64C5CC00839B51 /* MenuNavigationController.swift */; };
 		7DAF27810C70786E318B5225 /* Pods_playbyplay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78364F1C4F1104429A7009D1 /* Pods_playbyplay.framework */; };
 		C9C15943A8250CE235AE5F9D /* Pods_playbyplayUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48E88EA5B57B725A58E0E95B /* Pods_playbyplayUITests.framework */; };
 		CBC99C281DED339DB1FF38C6 /* Pods_playbyplayTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46BADAEB5557CDB5E8AC6CC7 /* Pods_playbyplayTests.framework */; };
@@ -117,6 +118,7 @@
 		15A19D881E61342E00839B51 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		15A19D8A1E61343D00839B51 /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupViewController.swift; sourceTree = "<group>"; };
 		15A19D8E1E632E8000839B51 /* MenuTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuTableViewController.swift; sourceTree = "<group>"; };
+		15A19D901E64C5CC00839B51 /* MenuNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuNavigationController.swift; sourceTree = "<group>"; };
 		3FAE985DD58695F15CAE929B /* Pods-playbyplay.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-playbyplay.release.xcconfig"; path = "Pods/Target Support Files/Pods-playbyplay/Pods-playbyplay.release.xcconfig"; sourceTree = "<group>"; };
 		46BADAEB5557CDB5E8AC6CC7 /* Pods_playbyplayTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_playbyplayTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		48E88EA5B57B725A58E0E95B /* Pods_playbyplayUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_playbyplayUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -209,6 +211,7 @@
 				1541A3551E5BED4E00060466 /* AppDelegate.swift */,
 				1541A3571E5BED4E00060466 /* ViewController.swift */,
 				1541A3591E5BED4E00060466 /* Main.storyboard */,
+				15A19D901E64C5CC00839B51 /* MenuNavigationController.swift */,
 				15A19D8E1E632E8000839B51 /* MenuTableViewController.swift */,
 				15A19D881E61342E00839B51 /* LoginViewController.swift */,
 				15A19D8A1E61343D00839B51 /* SignupViewController.swift */,
@@ -595,6 +598,7 @@
 			files = (
 				15A19D8B1E61343D00839B51 /* SignupViewController.swift in Sources */,
 				15A19D8F1E632E8000839B51 /* MenuTableViewController.swift in Sources */,
+				15A19D911E64C5CC00839B51 /* MenuNavigationController.swift in Sources */,
 				1541A3861E5BF8E400060466 /* GameViewController.swift in Sources */,
 				1541A3841E5BF89F00060466 /* FirstViewController.swift in Sources */,
 				1541A3581E5BED4E00060466 /* ViewController.swift in Sources */,

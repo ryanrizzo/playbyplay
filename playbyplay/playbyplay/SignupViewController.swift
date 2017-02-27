@@ -39,9 +39,10 @@ class SignupViewController: ViewController {
                     self.ref.child("users").child((user?.uid)!).child("inGame").setValue("false")
                     
                     
-                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                        let MTVC = storyboard.instantiateViewController(withIdentifier: "MTVC")
-                        self.present(MTVC, animated: true, completion: nil)
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    let MTVC = storyboard.instantiateViewController(withIdentifier: "MTVC")
+                    let MNC = UINavigationController(rootViewController: MTVC)
+                    self.present(MNC, animated: true, completion: nil)
                     
                 } else {
                     let invalidAlert = UIAlertController(title: "Invalid Entry", message: "Sign Up Failed. Check if you entered a valid email, otherwise you may have taken a username that already exists.", preferredStyle: UIAlertControllerStyle.alert)

@@ -7,17 +7,27 @@
 //
 
 import UIKit
+import Firebase
 
 class MenuTableViewController: UITableViewController {
-
+    var menuItems: [String] = ["Play!", "Stats", "Leaderboard", "View Profile", "Log Out"]
+    
+    var ref: FIRDatabaseReference!
+    var inGame : String = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        
+        
+        
+        
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -29,23 +39,61 @@ class MenuTableViewController: UITableViewController {
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 0
+        return self.menuItems.count + 20
     }
 
-    /*
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 
-        // Configure the cell...
-
+        // Configure the cell..
+        if(indexPath.row <= self.menuItems.count-1){
+            cell.textLabel?.text = self.menuItems[indexPath.row]
+            cell.textLabel?.textColor = UIColor.yellow
+            cell.backgroundColor = UIColor.black
+        }else{
+            cell.textLabel?.text = ""
+            cell.textLabel?.textColor = UIColor.yellow
+            cell.backgroundColor = UIColor.black
+        }
+        
+        
+        self.ref = FIRDatabase.database().reference()
+        let user = FIRAuth.auth()?.currentUser
+        
+        self.ref.child("users").child((user?.uid)!).observeSingleEvent(of: .value, with: { (snapshot) in
+            let value = snapshot.value as? NSDictionary
+            self.inGame = value?["inGame"] as? String ?? ""
+            
+        }) { (error) in
+            print(error.localizedDescription)
+        }
+        
+        
+        let inGame = self.ref.child("users").child((user?.uid)!).child("inGame")
+        
+       
+        
+        if(indexPath.row == 0 && inGame.isEqual("true")){
+            cell.textLabel?.text = "Return to Game"
+        }
+        
+        
+        
         return cell
     }
-    */
+ 
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if(indexPath.row == 0){
+            
+        }
+        
+    }
 
     /*
     // Override to support conditional editing of the table view.
