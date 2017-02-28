@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class GameViewController: ViewController {
     @IBOutlet weak var leaderboard: UITextView!
@@ -18,6 +19,19 @@ class GameViewController: ViewController {
     @IBOutlet weak var airoutKButton: UIButton!
     @IBOutlet weak var onBaseButton: UIButton!
     
+    @IBOutlet weak var menuButton: UIButton!
+    
+    var ref: FIRDatabaseReference!
+    
+    var playCount : Int = 1
+    
+    var lastPick: String = ""
+    
+    var currentGame: String = ""
+    
+    var lastPlay : String = ""
+    
+    var resultHistory = [String]()
     
     var d0 = UIImage(named: "0.png")
     var allpups = UIImage(named: "allpups.png")
@@ -57,6 +71,41 @@ class GameViewController: ViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.ref = FIRDatabase.database().reference()
+        let user = FIRAuth.auth()?.currentUser
+        
+            //set currentGame
+            self.ref.child("users").child((user?.uid)!).observeSingleEvent(of: .value, with: { (snapshot) in
+            let currUserDict = snapshot.value as? NSDictionary
+            
+            self.currentGame = currUserDict?.value(forKey: "currentGame") as! String
+            
+                //listen for new plays
+                self.ref.child("games").child(self.currentGame).observe(.value, with: { (snapshot) in
+                    let gameDict = snapshot.value as? NSDictionary
+                    
+                    self.lastPlay = gameDict?.value(forKey: "lastPlay") as! String
+                    self.gradePlay()
+                    self.lastPick = ""
+                    self.last10.text = "Your last 10:\n"+self.resultHistory.joined(separator: "\n")
+                    
+                    
+                }) { (error) in
+                    print(error.localizedDescription)
+                }
+            
+            }) { (error) in
+            print(error.localizedDescription)
+            }
+        
+
+        
+
+        
+
+        
+        
+        
         
         // Do any additional setup after loading the view.
         diamond.animationImages = loadDiamondArray;
@@ -71,6 +120,34 @@ class GameViewController: ViewController {
 
     }
     
+    func gradePlay(){
+        let allButtons: [UIButton] = [groundoutButton, airoutKButton, onBaseButton, leftSideButton,rightSideButton,airoutButton,kButton, singleButton,nonSingleButton,overLButton,underLButton,overRButton,underRButton, lfrfButton, cfButton, kSwingingButton, kLookingButton, groundSingleButton, airSingleButton, doubleButton,tripleHomerButton]
+        
+        if(lastPick == self.lastPlay){
+            for button in allButtons{
+                if(!button.isHidden){
+                    button.backgroundColor = UIColor.green
+                }
+                //add to stats
+            }
+            
+            self.resultHistory.append("Hit")
+            self.playCount += 1
+            
+        }else if(lastPick == "none yet" || last10.text == "Your last 10:"){
+            
+        }
+        else{
+            for button in allButtons{
+                if(!button.isHidden){
+                    button.backgroundColor = UIColor.red
+                }
+            }
+            self.resultHistory.append("Out")
+            self.playCount += 1
+        }
+        
+    }
     
     override func viewDidAppear(_ animated: Bool) {
         diamond.startAnimating()
@@ -87,6 +164,12 @@ class GameViewController: ViewController {
         powerups.stopAnimating()
         diamond.image = d0;
         powerups.image = allpups;
+    }
+    @IBAction func menuSelected(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let MTVC = storyboard.instantiateViewController(withIdentifier: "MTVC")
+        let MNC = UINavigationController(rootViewController: MTVC)
+        self.present(MNC, animated: true, completion: nil)
     }
 
     @IBAction func groundoutSelected(_ sender: Any) {
@@ -315,21 +398,25 @@ class GameViewController: ViewController {
         //SUBMIT PICKS
         updateButtons(mainButton: doubleButton, otherButton: tripleHomerButton)
         hideNonSelected()
+        lastPick = "double"
     }
     func tripleHomerSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: tripleHomerButton, otherButton: doubleButton)
         hideNonSelected()
+        lastPick = "triplehomer"
     }
     func airSingleSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: airSingleButton, otherButton: groundSingleButton)
         hideNonSelected()
+        lastPick = "airsingle"
     }
     func groundSingleSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: groundSingleButton, otherButton: airSingleButton)
         hideNonSelected()
+        lastPick = "groundsingle"
     }
     
     // Airout/K ************************************************************
@@ -433,21 +520,25 @@ class GameViewController: ViewController {
         //SUBMIT PICKS
         updateButtons(mainButton: lfrfButton, otherButton: cfButton)
         hideNonSelected()
+        lastPick = "lfrf"
     }
     func cfSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: cfButton, otherButton: lfrfButton)
         hideNonSelected()
+        lastPick = "cf"
     }
     func kSwingingSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: kSwingingButton, otherButton: kLookingButton)
         hideNonSelected()
+        lastPick = "kSwinging"
     }
     func kLookingSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: kLookingButton, otherButton: kSwingingButton)
         hideNonSelected()
+        lastPick = "kLooking"
     }
 
     
@@ -556,21 +647,26 @@ class GameViewController: ViewController {
         //SUBMIT PICKS
         updateButtons(mainButton: underLButton, otherButton: overLButton)
         hideNonSelected()
+        lastPick = "underL"
+        
     }
     func overLSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: overLButton, otherButton: underLButton)
         hideNonSelected()
+        lastPick = "overL"
     }
     func underRSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: underRButton, otherButton: overRButton)
         hideNonSelected()
+        lastPick = "underR"
     }
     func overRSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: overRButton, otherButton: underRButton)
         hideNonSelected()
+        lastPick = "overL"
     }
     
     

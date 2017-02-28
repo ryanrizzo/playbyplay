@@ -1,33 +1,45 @@
 //
-//  MenuTableViewController.swift
+//  GamesTableViewController.swift
 //  playbyplay
 //
-//  Created by Ryan Rizzo on 2/26/17.
+//  Created by Ryan Rizzo on 2/27/17.
 //  Copyright © 2017 Ryan Rizzo. All rights reserved.
 //
 
 import UIKit
 import Firebase
 
-class MenuTableViewController: UITableViewController {
-    var menuItems: [String] = ["Play!", "Stats", "Leaderboard", "View Profile", "Log Out"]
-    
+class GamesTableViewController: UITableViewController {
+
     var ref: FIRDatabaseReference!
-    var inGame : String = ""
-    
+    var games : [String] = []
+    var gameID : String = ""
+        
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.ref = FIRDatabase.database().reference()
+        
+        self.ref.child("games").observeSingleEvent(of: .value, with: { (snapshot) in
+            let value = snapshot.value as? NSDictionary
+            for game in (value?.allKeys)!{
+                self.games = []
+                self.games.append(game as! String)
+                print(self.games)
+                self.tableView.reloadData()
+            }
+            
+        }) { (error) in
+            print(error.localizedDescription)
+        }
+        
+        
+
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
-        
-        
-        
-        
-        
     }
 
     override func didReceiveMemoryWarning() {
@@ -44,75 +56,60 @@ class MenuTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return self.menuItems.count + 20
+        
+     
+    
+
+        
+        return self.games.count + 20
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-
-        // Configure the cell..
-        if(indexPath.row <= self.menuItems.count-1){
-            cell.textLabel?.text = self.menuItems[indexPath.row]
-            cell.textLabel?.textColor = UIColor.yellow
-            cell.backgroundColor = UIColor.black
-        }else{
-            cell.textLabel?.text = ""
-            cell.textLabel?.textColor = UIColor.white
-            cell.backgroundColor = UIColor.black
+        
+                // Configure the cell...
+        if(indexPath.row < self.games.count){
+            cell.textLabel?.text = self.games[indexPath.row] + " (9 Inning Contest)"
         }
         
+        cell.backgroundColor = UIColor.black
+        cell.textLabel?.textColor = UIColor.white
         
-        self.ref = FIRDatabase.database().reference()
+        return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let user = FIRAuth.auth()?.currentUser
         
-        self.ref.child("users").child((user?.uid)!).observeSingleEvent(of: .value, with: { (snapshot) in
-            let value = snapshot.value as? NSDictionary
-            self.inGame = (value?["inGame"] as? String)!
+        self.ref.child("games").child(self.games[indexPath.row]).observeSingleEvent(of: .value, with: {(snapshot) in
             
-            if(indexPath.row == 0 && self.inGame.isEqual("true")){
-                cell.textLabel?.text = "Return to Game"
-            }
+                let value = snapshot.value as? NSDictionary
+                self.gameID = value?["gameID"] as? String ?? ""
+                print(self.gameID)
+                
+                self.ref.child("users").child((user?.uid)!).child("gameID").setValue(self.gameID)
+                self.ref.child("users").child((user?.uid)!).child("inGame").setValue("true")
+                self.ref.child("users").child((user?.uid)!).child("score").setValue(0)
+                self.ref.child("users").child((user?.uid)!).child("money").setValue("$0")
+                self.ref.child("users").child((user?.uid)!).child("currentGame").setValue(self.games[indexPath.row])
+            
+            
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let GVC = storyboard.instantiateViewController(withIdentifier: "GVC")
+            self.present(GVC, animated: true, completion: nil)
             
         }) { (error) in
             print(error.localizedDescription)
         }
-        
-        
-        
 
         
         
         
-        
-        
-        return cell
+
+
     }
- 
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //log out
-        if(indexPath.row == 0){
-            if(self.inGame == "false"){
-                self.performSegue(withIdentifier: "segueToGames", sender: self)
-            }else{
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let GVC = storyboard.instantiateViewController(withIdentifier: "GVC")
-                self.present(GVC, animated: true, completion: nil)
-            }
-            
-        } else if(indexPath.row == 4){
-            let user = FIRAuth.auth()
-            do{
-                try user?.signOut()
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let FVC = storyboard.instantiateViewController(withIdentifier: "FVC")
-                self.present(FVC, animated: true, completion: nil)
-            } catch let error as NSError {
-                print(error.localizedDescription)
-            }
-        }
-        
-    }
+    
 
     /*
     // Override to support conditional editing of the table view.

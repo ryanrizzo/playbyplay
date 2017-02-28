@@ -28,7 +28,6 @@
 		1534D4951E6125C10012ED3F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1534D4941E6125C10012ED3F /* GoogleService-Info.plist */; };
 		1541A3561E5BED4E00060466 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1541A3551E5BED4E00060466 /* AppDelegate.swift */; };
 		1541A3581E5BED4E00060466 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1541A3571E5BED4E00060466 /* ViewController.swift */; };
-		1541A35B1E5BED4E00060466 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1541A3591E5BED4E00060466 /* Main.storyboard */; };
 		1541A35D1E5BED4E00060466 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1541A35C1E5BED4E00060466 /* Assets.xcassets */; };
 		1541A3601E5BED4E00060466 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1541A35E1E5BED4E00060466 /* LaunchScreen.storyboard */; };
 		1541A36B1E5BED4F00060466 /* playbyplayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1541A36A1E5BED4F00060466 /* playbyplayTests.swift */; };
@@ -48,6 +47,8 @@
 		15A19D8B1E61343D00839B51 /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A19D8A1E61343D00839B51 /* SignupViewController.swift */; };
 		15A19D8F1E632E8000839B51 /* MenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A19D8E1E632E8000839B51 /* MenuTableViewController.swift */; };
 		15A19D911E64C5CC00839B51 /* MenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A19D901E64C5CC00839B51 /* MenuNavigationController.swift */; };
+		15A19D951E6505BD00839B51 /* GamesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A19D941E6505BD00839B51 /* GamesTableViewController.swift */; };
+		15A19D981E651AFB00839B51 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 15A19D961E651AFB00839B51 /* Main.storyboard */; };
 		7DAF27810C70786E318B5225 /* Pods_playbyplay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78364F1C4F1104429A7009D1 /* Pods_playbyplay.framework */; };
 		C9C15943A8250CE235AE5F9D /* Pods_playbyplayUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48E88EA5B57B725A58E0E95B /* Pods_playbyplayUITests.framework */; };
 		CBC99C281DED339DB1FF38C6 /* Pods_playbyplayTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46BADAEB5557CDB5E8AC6CC7 /* Pods_playbyplayTests.framework */; };
@@ -94,7 +95,6 @@
 		1541A3521E5BED4E00060466 /* playbyplay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = playbyplay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1541A3551E5BED4E00060466 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1541A3571E5BED4E00060466 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		1541A35A1E5BED4E00060466 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1541A35C1E5BED4E00060466 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1541A35F1E5BED4E00060466 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1541A3611E5BED4E00060466 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -119,6 +119,8 @@
 		15A19D8A1E61343D00839B51 /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupViewController.swift; sourceTree = "<group>"; };
 		15A19D8E1E632E8000839B51 /* MenuTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuTableViewController.swift; sourceTree = "<group>"; };
 		15A19D901E64C5CC00839B51 /* MenuNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuNavigationController.swift; sourceTree = "<group>"; };
+		15A19D941E6505BD00839B51 /* GamesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GamesTableViewController.swift; sourceTree = "<group>"; };
+		15A19D971E651AFB00839B51 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3FAE985DD58695F15CAE929B /* Pods-playbyplay.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-playbyplay.release.xcconfig"; path = "Pods/Target Support Files/Pods-playbyplay/Pods-playbyplay.release.xcconfig"; sourceTree = "<group>"; };
 		46BADAEB5557CDB5E8AC6CC7 /* Pods_playbyplayTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_playbyplayTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		48E88EA5B57B725A58E0E95B /* Pods_playbyplayUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_playbyplayUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -210,7 +212,8 @@
 			children = (
 				1541A3551E5BED4E00060466 /* AppDelegate.swift */,
 				1541A3571E5BED4E00060466 /* ViewController.swift */,
-				1541A3591E5BED4E00060466 /* Main.storyboard */,
+				15A19D961E651AFB00839B51 /* Main.storyboard */,
+				15A19D941E6505BD00839B51 /* GamesTableViewController.swift */,
 				15A19D901E64C5CC00839B51 /* MenuNavigationController.swift */,
 				15A19D8E1E632E8000839B51 /* MenuTableViewController.swift */,
 				15A19D881E61342E00839B51 /* LoginViewController.swift */,
@@ -419,7 +422,6 @@
 				1530A9B41E5C0C19009B7813 /* endinning.png in Resources */,
 				1530A9B31E5C0C19009B7813 /* 3.png in Resources */,
 				1534D4951E6125C10012ED3F /* GoogleService-Info.plist in Resources */,
-				1541A35B1E5BED4E00060466 /* Main.storyboard in Resources */,
 				1530A9B21E5C0C19009B7813 /* 23.png in Resources */,
 				1530A9B71E5C0C19009B7813 /* hit12.png in Resources */,
 				156DC1B11E5E1A2F006D60C3 /* 4.png in Resources */,
@@ -433,6 +435,7 @@
 				156DC1AD1E5E1395006D60C3 /* 3pups.png in Resources */,
 				1530A9B61E5C0C19009B7813 /* hit1.png in Resources */,
 				156DC1AB1E5E1395006D60C3 /* 23pups.png in Resources */,
+				15A19D981E651AFB00839B51 /* Main.storyboard in Resources */,
 				156DC1AE1E5E1395006D60C3 /* allpups.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -600,6 +603,7 @@
 				15A19D8F1E632E8000839B51 /* MenuTableViewController.swift in Sources */,
 				15A19D911E64C5CC00839B51 /* MenuNavigationController.swift in Sources */,
 				1541A3861E5BF8E400060466 /* GameViewController.swift in Sources */,
+				15A19D951E6505BD00839B51 /* GamesTableViewController.swift in Sources */,
 				1541A3841E5BF89F00060466 /* FirstViewController.swift in Sources */,
 				1541A3581E5BED4E00060466 /* ViewController.swift in Sources */,
 				15A19D891E61342E00839B51 /* LoginViewController.swift in Sources */,
@@ -639,20 +643,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		1541A3591E5BED4E00060466 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				1541A35A1E5BED4E00060466 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		1541A35E1E5BED4E00060466 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				1541A35F1E5BED4E00060466 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		15A19D961E651AFB00839B51 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				15A19D971E651AFB00839B51 /* Base */,
+			);
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
