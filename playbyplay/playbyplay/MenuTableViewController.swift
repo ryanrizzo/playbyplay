@@ -10,7 +10,7 @@ import UIKit
 import Firebase
 
 class MenuTableViewController: UITableViewController {
-    var menuItems: [String] = ["Play!", "Stats", "Leaderboard", "View Profile", "Log Out"]
+    var menuItems: [String] = ["Play!", "Leaderboard", "View Profile", "Log Out"]
     
     var ref: FIRDatabaseReference!
     var inGame : String = ""
@@ -100,7 +100,7 @@ class MenuTableViewController: UITableViewController {
                 self.present(GVC, animated: true, completion: nil)
             }
             
-        } else if(indexPath.row == 4){
+        } else if(indexPath.row == 3){
             let user = FIRAuth.auth()
             do{
                 try user?.signOut()
@@ -110,6 +110,10 @@ class MenuTableViewController: UITableViewController {
             } catch let error as NSError {
                 print(error.localizedDescription)
             }
+        } else if(indexPath.row == 1){
+            self.performSegue(withIdentifier: "segueToLeaderboard", sender: self)
+        } else if(indexPath.row == 2){
+            self.performSegue(withIdentifier: "segueToProfile", sender: self)
         }
         
     }

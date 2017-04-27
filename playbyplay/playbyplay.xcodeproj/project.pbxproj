@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		151C36631EB184F4001F9384 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151C36621EB184F4001F9384 /* ProfileViewController.swift */; };
+		151C36651EB185AF001F9384 /* LeaderboardTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151C36641EB185AF001F9384 /* LeaderboardTableViewController.swift */; };
 		1530A9AD1E5C0C19009B7813 /* 0.png in Resources */ = {isa = PBXBuildFile; fileRef = 1530A99B1E5C0C19009B7813 /* 0.png */; };
 		1530A9AE1E5C0C19009B7813 /* 1+2.png in Resources */ = {isa = PBXBuildFile; fileRef = 1530A99C1E5C0C19009B7813 /* 1+2.png */; };
 		1530A9AF1E5C0C19009B7813 /* 1.png in Resources */ = {isa = PBXBuildFile; fileRef = 1530A99D1E5C0C19009B7813 /* 1.png */; };
@@ -73,6 +75,8 @@
 
 /* Begin PBXFileReference section */
 		0ED85E79B8D431BD8D56B971 /* Pods-playbyplayTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-playbyplayTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-playbyplayTests/Pods-playbyplayTests.release.xcconfig"; sourceTree = "<group>"; };
+		151C36621EB184F4001F9384 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		151C36641EB185AF001F9384 /* LeaderboardTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeaderboardTableViewController.swift; sourceTree = "<group>"; };
 		1530A99B1E5C0C19009B7813 /* 0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 0.png; sourceTree = "<group>"; };
 		1530A99C1E5C0C19009B7813 /* 1+2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "1+2.png"; sourceTree = "<group>"; };
 		1530A99D1E5C0C19009B7813 /* 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1.png; sourceTree = "<group>"; };
@@ -114,7 +118,7 @@
 		156DC1A51E5E1395006D60C3 /* 3pups.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 3pups.png; sourceTree = "<group>"; };
 		156DC1A61E5E1395006D60C3 /* allpups.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = allpups.png; sourceTree = "<group>"; };
 		156DC1A71E5E1395006D60C3 /* nopups.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nopups.png; sourceTree = "<group>"; };
-		156DC1B01E5E1A2F006D60C3 /* 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = 4.png; path = "../../../../../Senior Year/Mobile Interfaces/4.png"; sourceTree = "<group>"; };
+		156DC1B01E5E1A2F006D60C3 /* 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 4.png; sourceTree = "<group>"; };
 		15A19D881E61342E00839B51 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		15A19D8A1E61343D00839B51 /* SignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignupViewController.swift; sourceTree = "<group>"; };
 		15A19D8E1E632E8000839B51 /* MenuTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuTableViewController.swift; sourceTree = "<group>"; };
@@ -213,6 +217,8 @@
 				1541A3551E5BED4E00060466 /* AppDelegate.swift */,
 				1541A3571E5BED4E00060466 /* ViewController.swift */,
 				15A19D961E651AFB00839B51 /* Main.storyboard */,
+				151C36621EB184F4001F9384 /* ProfileViewController.swift */,
+				151C36641EB185AF001F9384 /* LeaderboardTableViewController.swift */,
 				15A19D941E6505BD00839B51 /* GamesTableViewController.swift */,
 				15A19D901E64C5CC00839B51 /* MenuNavigationController.swift */,
 				15A19D8E1E632E8000839B51 /* MenuTableViewController.swift */,
@@ -601,9 +607,11 @@
 			files = (
 				15A19D8B1E61343D00839B51 /* SignupViewController.swift in Sources */,
 				15A19D8F1E632E8000839B51 /* MenuTableViewController.swift in Sources */,
+				151C36651EB185AF001F9384 /* LeaderboardTableViewController.swift in Sources */,
 				15A19D911E64C5CC00839B51 /* MenuNavigationController.swift in Sources */,
 				1541A3861E5BF8E400060466 /* GameViewController.swift in Sources */,
 				15A19D951E6505BD00839B51 /* GamesTableViewController.swift in Sources */,
+				151C36631EB184F4001F9384 /* ProfileViewController.swift in Sources */,
 				1541A3841E5BF89F00060466 /* FirstViewController.swift in Sources */,
 				1541A3581E5BED4E00060466 /* ViewController.swift in Sources */,
 				15A19D891E61342E00839B51 /* LoginViewController.swift in Sources */,

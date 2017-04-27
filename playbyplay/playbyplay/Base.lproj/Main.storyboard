@@ -239,6 +239,8 @@
                     <navigationItem key="navigationItem" title="Main Menu" id="NNQ-my-Ldh"/>
                     <connections>
                         <segue destination="fRB-6I-d72" kind="show" identifier="segueToGames" id="q5h-MN-B1V"/>
+                        <segue destination="kGe-3r-67b" kind="show" identifier="segueToLeaderboard" id="jF7-87-ujT"/>
+                        <segue destination="3NK-pk-D2n" kind="show" identifier="segueToProfile" id="0L4-kx-KVf"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pma-D8-nc8" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -410,6 +412,58 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3525.5999999999999" y="187.55622188905548"/>
+        </scene>
+        <!--Leaderboard-->
+        <scene sceneID="jwN-zP-wva">
+            <objects>
+                <tableViewController storyboardIdentifier="LTVC" id="kGe-3r-67b" customClass="LeaderboardTableViewController" customModule="playbyplay" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="YYc-DJ-On3">
+                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="yrB-iZ-PXI">
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yrB-iZ-PXI" id="z1l-pT-LDD">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="kGe-3r-67b" id="5Hd-kq-dVa"/>
+                            <outlet property="delegate" destination="kGe-3r-67b" id="IfQ-dP-JK1"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Leaderboard" id="zOt-JO-Nkd">
+                        <barButtonItem key="backBarButtonItem" title="Menu" id="Vb1-bi-qbF"/>
+                    </navigationItem>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Swf-Ec-CaK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2633" y="-511"/>
+        </scene>
+        <!--Profile-->
+        <scene sceneID="fac-4h-g6r">
+            <objects>
+                <viewController id="3NK-pk-D2n" customClass="ProfileViewController" customModule="playbyplay" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="uTs-UF-L3O"/>
+                        <viewControllerLayoutGuide type="bottom" id="c4v-Rd-Yxe"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="F6U-y5-D1h">
+                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Profile" id="cxJ-JX-9us">
+                        <barButtonItem key="backBarButtonItem" title="Menu" id="5aU-uE-Aw7"/>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="N6f-gK-tb1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2632.8000000000002" y="932.38380809595208"/>
         </scene>
         <!--Menu Navigation Controller-->
         <scene sceneID="GdG-tK-rWL">
