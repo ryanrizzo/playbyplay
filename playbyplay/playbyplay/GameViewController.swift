@@ -29,7 +29,7 @@ class GameViewController: ViewController {
     
     var currentGame: String = ""
     
-    var lastPlay : String = ""
+    var lastPlay : String = "init"
     
     var resultHistory = [String]()
     
@@ -66,7 +66,16 @@ class GameViewController: ViewController {
     let lfrfButton = UIButton()
     let cfButton = UIButton()
     
+    let groundoutLOutcomes: [String] = ["underL", "overL"]
+    let groundoutROutcomes: [String] = ["underR", "overR"]
+    let airoutKAiroutOutcomes: [String] = ["lfrf", "cf"]
+    let airoutKKOutcomes: [String] = ["kSwinging", "kLooking"]
+    let onBaseSingleOutcomes: [String] = ["airsingle", "groundsingle"]
+    let onBaseNonSingleOutcomes: [String] = ["double", "triplehomer"]
     
+    var pickSubmitted = false
+    
+    //var newPlay : Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,9 +92,20 @@ class GameViewController: ViewController {
                 //listen for new plays
                 self.ref.child("games").child(self.currentGame).observe(.value, with: { (snapshot) in
                     let gameDict = snapshot.value as? NSDictionary
-                    
+                    //prevPlay is to see whether the actual value changed in the database
+                    let prevPlay = self.lastPlay
                     self.lastPlay = gameDict?.value(forKey: "lastPlay") as! String
-                    self.gradePlay()
+                    
+                    //picks must be in by this point
+                    if(self.lastPlay == "closed"){
+                        self.closeBallot()
+                    }
+                    
+                    if(self.lastPlay != prevPlay && prevPlay != "init"){
+                        self.gradePlay()
+                    }
+                    
+                    
                     self.lastPick = ""
                     self.last10.text = "Your last 10:\n"+self.resultHistory.joined(separator: "\n")
                     
@@ -117,13 +137,78 @@ class GameViewController: ViewController {
         powerups.animationImages = loadPupArray
         powerups.animationDuration = 0.65
         powerups.animationRepeatCount = 1
+        
+        showThirdQsForK()
+        showThirdQsForAirout()
+        showThirdQsForSingle()
+        showThirdQsForLeftSide()
+        showThirdQsForNonSingle()
+        showThirdQsForRighttSide()
+        showSecondQsForGroundout()
+        showSecondQsForAiroutK()
+        showSecondQsForOnBase()
+        
+        hideThirdQsForK()
+        hideThirdQsForAirout()
+        hideThirdQsForSingle()
+        hideThirdQsForLeftSide()
+        hideThirdQsForRightSide()
+        hideThirdQsForNonSingle()
+        hideSecondQsForOnBase()
+        hideSecondQsForAiroutK()
+        hideSecondQsForGroundout()
 
     }
     
-    func gradePlay(){
+    func closeBallot(){
         let allButtons: [UIButton] = [groundoutButton, airoutKButton, onBaseButton, leftSideButton,rightSideButton,airoutButton,kButton, singleButton,nonSingleButton,overLButton,underLButton,overRButton,underRButton, lfrfButton, cfButton, kSwingingButton, kLookingButton, groundSingleButton, airSingleButton, doubleButton,tripleHomerButton]
+
+        hideNonSelected()
         
-        if(lastPick == self.lastPlay){
+        for button in allButtons{
+            button.isEnabled = false
+        }
+        
+        
+    }
+    
+    func gradePlay(){
+        
+        let allButtons: [UIButton] = [groundoutButton, airoutKButton, onBaseButton, leftSideButton,rightSideButton,airoutButton,kButton, singleButton,nonSingleButton,overLButton,underLButton,overRButton,underRButton, lfrfButton, cfButton, kSwingingButton, kLookingButton, groundSingleButton, airSingleButton, doubleButton,tripleHomerButton]
+
+        if(self.lastPlay == "next"){
+            for button in allButtons{
+
+                
+                button.isHidden = false
+
+                button.isSelected = false
+                button.isHighlighted = false
+                button.backgroundColor = UIColor.darkGray
+                button.isEnabled = true
+                print(button.currentTitle!, button.title)
+                
+                button.setTitleColor(UIColor.white, for: .disabled)
+                button.setTitleColor(UIColor.black, for: .selected)
+                button.setTitleColor(UIColor.black, for: .highlighted)
+                button.setTitleColor(UIColor.white, for: .normal)
+                
+                
+                
+                hideThirdQsForK()
+                hideThirdQsForAirout()
+                hideThirdQsForSingle()
+                hideThirdQsForLeftSide()
+                hideThirdQsForRightSide()
+                hideThirdQsForNonSingle()
+                hideSecondQsForOnBase()
+                hideSecondQsForAiroutK()
+                hideSecondQsForGroundout()
+                
+                
+            }
+        }
+        else if(lastPick == self.lastPlay){
             for button in allButtons{
                 if(!button.isHidden){
                     button.backgroundColor = UIColor.green
@@ -137,6 +222,216 @@ class GameViewController: ViewController {
         }else if(lastPick == "none yet" || last10.text == "Your last 10:"){
             
         }
+            
+            //double for groundoutL selection
+        else if(groundoutLOutcomes.contains(lastPick) && groundoutLOutcomes.contains(self.lastPlay)){
+            for button in allButtons{
+                if(!button.isHidden){
+                    if(self.lastPlay != "underL"){
+                        groundoutButton.backgroundColor = UIColor.green
+                        leftSideButton.backgroundColor = UIColor.green
+                        underLButton.backgroundColor = UIColor.red
+                    }
+                    else if(self.lastPlay != "overL"){
+                        groundoutButton.backgroundColor = UIColor.green
+                        leftSideButton.backgroundColor = UIColor.green
+                        overLButton.backgroundColor = UIColor.red
+                    }
+                }
+            }
+        }
+            //double for groundoutR selection
+        else if(groundoutROutcomes.contains(lastPick) && groundoutROutcomes.contains(self.lastPlay)){
+            for button in allButtons{
+                if(!button.isHidden){
+                    if(self.lastPlay != "underR"){
+                        groundoutButton.backgroundColor = UIColor.green
+                        rightSideButton.backgroundColor = UIColor.green
+                        underRButton.backgroundColor = UIColor.red
+                    }
+                    else if(self.lastPlay != "overR"){
+                        groundoutButton.backgroundColor = UIColor.green
+                        rightSideButton.backgroundColor = UIColor.green
+                        overRButton.backgroundColor = UIColor.red
+                    }
+                }
+            }
+        }
+            //double for airoutK airout selection
+        else if(airoutKAiroutOutcomes.contains(lastPick) && airoutKAiroutOutcomes.contains(self.lastPlay)){
+            for button in allButtons{
+                if(!button.isHidden){
+                    if(self.lastPlay != "lfrf"){
+                        airoutKButton.backgroundColor = UIColor.green
+                        airoutButton.backgroundColor = UIColor.green
+                        lfrfButton.backgroundColor = UIColor.red
+                    }
+                    else if(self.lastPlay != "cf"){
+                        airoutKButton.backgroundColor = UIColor.green
+                        airoutButton.backgroundColor = UIColor.green
+                        cfButton.backgroundColor = UIColor.red
+                    }
+                }
+            }
+        }
+            //double for airoutK K selection
+        else if(airoutKKOutcomes.contains(lastPick) && airoutKKOutcomes.contains(self.lastPlay)){
+            for button in allButtons{
+                if(!button.isHidden){
+                    if(self.lastPlay != "kSwinging"){
+                        airoutKButton.backgroundColor = UIColor.green
+                        kButton.backgroundColor = UIColor.green
+                        kSwingingButton.backgroundColor = UIColor.red
+                    }
+                    else if(self.lastPlay != "kLooking"){
+                        airoutKButton.backgroundColor = UIColor.green
+                        kButton.backgroundColor = UIColor.green
+                        kLookingButton.backgroundColor = UIColor.red
+                    }
+                }
+            }
+        }
+            //double for onBase Single selection
+        else if(onBaseSingleOutcomes.contains(lastPick) && onBaseSingleOutcomes.contains(self.lastPlay)){
+            for button in allButtons{
+                if(!button.isHidden){
+                    if(self.lastPlay != "airsingle"){
+                        onBaseButton.backgroundColor = UIColor.green
+                        singleButton.backgroundColor = UIColor.green
+                        airSingleButton.backgroundColor = UIColor.red
+                    }
+                    else if(self.lastPlay != "groundsingle"){
+                        onBaseButton.backgroundColor = UIColor.green
+                        singleButton.backgroundColor = UIColor.green
+                        groundSingleButton.backgroundColor = UIColor.red
+                    }
+                }
+            }
+        }
+            //double for onBase NonSingle selction
+        else if(onBaseNonSingleOutcomes.contains(lastPick) && onBaseNonSingleOutcomes.contains(self.lastPlay)){
+            for button in allButtons{
+                if(!button.isHidden){
+                    if(self.lastPlay != "double"){
+                        onBaseButton.backgroundColor = UIColor.green
+                        nonSingleButton.backgroundColor = UIColor.green
+                        doubleButton.backgroundColor = UIColor.red
+                    }
+                    else if(self.lastPlay != "triplehomer"){
+                        onBaseButton.backgroundColor = UIColor.green
+                        nonSingleButton.backgroundColor = UIColor.green
+                        tripleHomerButton.backgroundColor = UIColor.red
+                    }
+                }
+            }
+        }
+            
+            
+            //************** SINGLE OUTCOMES BUD! ***********************************
+            //single for groundoutL selection
+        else if(groundoutLOutcomes.contains(lastPick) && (groundoutLOutcomes.contains(self.lastPlay) || groundoutROutcomes.contains(self.lastPlay))){
+            for button in allButtons{
+                if(!button.isHidden){
+                    if(self.lastPlay != "underL"){
+                        groundoutButton.backgroundColor = UIColor.green
+                        leftSideButton.backgroundColor = UIColor.red
+                        underLButton.backgroundColor = UIColor.red
+                    }
+                    else if(self.lastPlay != "overL"){
+                        groundoutButton.backgroundColor = UIColor.green
+                        leftSideButton.backgroundColor = UIColor.red
+                        overLButton.backgroundColor = UIColor.red
+                    }
+                }
+            }
+        }
+            //single for groundoutR selection
+        else if(groundoutROutcomes.contains(lastPick) && (groundoutROutcomes.contains(self.lastPlay) || groundoutLOutcomes.contains(self.lastPlay))){
+            for button in allButtons{
+                if(!button.isHidden){
+                    if(self.lastPlay != "underR"){
+                        groundoutButton.backgroundColor = UIColor.green
+                        rightSideButton.backgroundColor = UIColor.red
+                        underRButton.backgroundColor = UIColor.red
+                    }
+                    else if(self.lastPlay != "overR"){
+                        groundoutButton.backgroundColor = UIColor.green
+                        rightSideButton.backgroundColor = UIColor.red
+                        overRButton.backgroundColor = UIColor.red
+                    }
+                }
+            }
+        }
+            //single for airoutK airout selection
+        else if(airoutKAiroutOutcomes.contains(lastPick) && (airoutKAiroutOutcomes.contains(self.lastPlay) || airoutKKOutcomes.contains(self.lastPlay))){
+            for button in allButtons{
+                if(!button.isHidden){
+                    if(self.lastPlay != "lfrf"){
+                        airoutKButton.backgroundColor = UIColor.green
+                        airoutButton.backgroundColor = UIColor.red
+                        lfrfButton.backgroundColor = UIColor.red
+                    }
+                    else if(self.lastPlay != "cf"){
+                        airoutKButton.backgroundColor = UIColor.green
+                        airoutButton.backgroundColor = UIColor.red
+                        cfButton.backgroundColor = UIColor.red
+                    }
+                }
+            }
+        }
+            //single for airoutK K selection
+        else if(airoutKKOutcomes.contains(lastPick) && (airoutKKOutcomes.contains(self.lastPlay) || airoutKAiroutOutcomes.contains(self.lastPlay))){
+            for button in allButtons{
+                if(!button.isHidden){
+                    if(self.lastPlay != "kSwinging"){
+                        airoutKButton.backgroundColor = UIColor.green
+                        kButton.backgroundColor = UIColor.red
+                        kSwingingButton.backgroundColor = UIColor.red
+                    }
+                    else if(self.lastPlay != "kLooking"){
+                        airoutKButton.backgroundColor = UIColor.green
+                        kButton.backgroundColor = UIColor.red
+                        kLookingButton.backgroundColor = UIColor.red
+                    }
+                }
+            }
+        }
+            //single for onBase Single selection
+        else if(onBaseSingleOutcomes.contains(lastPick) && (onBaseSingleOutcomes.contains(self.lastPlay) || onBaseNonSingleOutcomes.contains(self.lastPlay))){
+            for button in allButtons{
+                if(!button.isHidden){
+                    if(self.lastPlay != "airsingle"){
+                        onBaseButton.backgroundColor = UIColor.green
+                        singleButton.backgroundColor = UIColor.red
+                        airSingleButton.backgroundColor = UIColor.red
+                    }
+                    else if(self.lastPlay != "groundsingle"){
+                        onBaseButton.backgroundColor = UIColor.green
+                        singleButton.backgroundColor = UIColor.red
+                        groundSingleButton.backgroundColor = UIColor.red
+                    }
+                }
+            }
+        }
+            //single for onBase NonSingle selction
+        else if(onBaseNonSingleOutcomes.contains(lastPick) && (onBaseNonSingleOutcomes.contains(self.lastPlay) || onBaseSingleOutcomes.contains(self.lastPlay))){
+            for button in allButtons{
+                if(!button.isHidden){
+                    if(self.lastPlay != "double"){
+                        onBaseButton.backgroundColor = UIColor.green
+                        nonSingleButton.backgroundColor = UIColor.red
+                        doubleButton.backgroundColor = UIColor.red
+                    }
+                    else if(self.lastPlay != "triplehomer"){
+                        onBaseButton.backgroundColor = UIColor.green
+                        nonSingleButton.backgroundColor = UIColor.red
+                        tripleHomerButton.backgroundColor = UIColor.red
+                    }
+                }
+            }
+        }
+
+            
         else{
             for button in allButtons{
                 if(!button.isHidden){
@@ -287,6 +582,7 @@ class GameViewController: ViewController {
         if(singleButton.isHidden || nonSingleButton.isHidden){
             singleButton.isHidden = false
             nonSingleButton.isHidden = false
+            print("title label: ", singleButton.titleLabel!)
             if(singleButton.isSelected){
                 showThirdQsForSingle()
             }
@@ -399,24 +695,28 @@ class GameViewController: ViewController {
         updateButtons(mainButton: doubleButton, otherButton: tripleHomerButton)
         hideNonSelected()
         lastPick = "double"
+        pickSubmitted = true
     }
     func tripleHomerSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: tripleHomerButton, otherButton: doubleButton)
         hideNonSelected()
         lastPick = "triplehomer"
+        pickSubmitted = true
     }
     func airSingleSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: airSingleButton, otherButton: groundSingleButton)
         hideNonSelected()
         lastPick = "airsingle"
+        pickSubmitted = true
     }
     func groundSingleSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: groundSingleButton, otherButton: airSingleButton)
         hideNonSelected()
         lastPick = "groundsingle"
+        pickSubmitted = true
     }
     
     // Airout/K ************************************************************
@@ -521,24 +821,28 @@ class GameViewController: ViewController {
         updateButtons(mainButton: lfrfButton, otherButton: cfButton)
         hideNonSelected()
         lastPick = "lfrf"
+        pickSubmitted = true
     }
     func cfSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: cfButton, otherButton: lfrfButton)
         hideNonSelected()
         lastPick = "cf"
+        pickSubmitted = true
     }
     func kSwingingSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: kSwingingButton, otherButton: kLookingButton)
         hideNonSelected()
         lastPick = "kSwinging"
+        pickSubmitted = true
     }
     func kLookingSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: kLookingButton, otherButton: kSwingingButton)
         hideNonSelected()
         lastPick = "kLooking"
+        pickSubmitted = true
     }
 
     
@@ -548,6 +852,7 @@ class GameViewController: ViewController {
         if(leftSideButton.isHidden || rightSideButton.isHidden){
             leftSideButton.isHidden = false
             rightSideButton.isHidden = false
+            print("title label: ", leftSideButton.titleLabel)
             
             if(leftSideButton.isSelected){
                 showThirdQsForLeftSide()
@@ -648,25 +953,28 @@ class GameViewController: ViewController {
         updateButtons(mainButton: underLButton, otherButton: overLButton)
         hideNonSelected()
         lastPick = "underL"
-        
+        pickSubmitted = true
     }
     func overLSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: overLButton, otherButton: underLButton)
         hideNonSelected()
         lastPick = "overL"
+        pickSubmitted = true
     }
     func underRSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: underRButton, otherButton: overRButton)
         hideNonSelected()
         lastPick = "underR"
+        pickSubmitted = true
     }
     func overRSelected(_ sender: UIButton){
         //SUBMIT PICKS
         updateButtons(mainButton: overRButton, otherButton: underRButton)
         hideNonSelected()
-        lastPick = "overL"
+        lastPick = "overR"
+        pickSubmitted = true
     }
     
     
@@ -675,10 +983,11 @@ class GameViewController: ViewController {
     func hideNonSelected(){
         let allButtons: [UIButton] = [groundoutButton, airoutKButton, onBaseButton, leftSideButton,rightSideButton,airoutButton,kButton, singleButton,nonSingleButton,overLButton,underLButton,overRButton,underRButton, lfrfButton, cfButton, kSwingingButton, kLookingButton, groundSingleButton, airSingleButton, doubleButton,tripleHomerButton]
         
+        
         for button in allButtons {
             if(!button.isSelected){
-                button.isHidden=true
-                button.isEnabled=false
+                button.isHidden = true
+                //button.isEnabled = false
             }else{
                 
                 button.backgroundColor = UIColor.darkGray
@@ -687,7 +996,7 @@ class GameViewController: ViewController {
                 button.setTitleColor(UIColor.yellow, for: .highlighted)
                 button.setTitleColor(UIColor.yellow, for: .normal)
                 
-                button.isEnabled=false
+                //button.isEnabled=false
             }
         }
     }
