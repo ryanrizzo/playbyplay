@@ -101,7 +101,7 @@ class GameViewController: ViewController {
                         self.closeBallot()
                     }
                     
-                    if(self.lastPlay != prevPlay && prevPlay != "init"){
+                    else if(self.lastPlay != prevPlay && prevPlay != "init"){
                         self.gradePlay()
                     }
                     
@@ -214,6 +214,7 @@ class GameViewController: ViewController {
                     button.backgroundColor = UIColor.green
                 }
                 //add to stats
+                
             }
             
             self.resultHistory.append("Hit")
@@ -852,7 +853,7 @@ class GameViewController: ViewController {
         if(leftSideButton.isHidden || rightSideButton.isHidden){
             leftSideButton.isHidden = false
             rightSideButton.isHidden = false
-            print("title label: ", leftSideButton.titleLabel)
+            //print("title label: ", leftSideButton.titleLabel)
             
             if(leftSideButton.isSelected){
                 showThirdQsForLeftSide()
@@ -987,7 +988,7 @@ class GameViewController: ViewController {
         for button in allButtons {
             if(!button.isSelected){
                 button.isHidden = true
-                //button.isEnabled = false
+                button.isEnabled = false
             }else{
                 
                 button.backgroundColor = UIColor.darkGray
@@ -996,7 +997,7 @@ class GameViewController: ViewController {
                 button.setTitleColor(UIColor.yellow, for: .highlighted)
                 button.setTitleColor(UIColor.yellow, for: .normal)
                 
-                //button.isEnabled=false
+                button.isEnabled=false
             }
         }
     }

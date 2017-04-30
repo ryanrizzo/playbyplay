@@ -94,6 +94,24 @@ class GamesTableViewController: UITableViewController {
                 self.ref.child("users").child((user?.uid)!).child("money").setValue("$0")
                 self.ref.child("users").child((user?.uid)!).child("currentGame").setValue(self.games[indexPath.row])
             
+            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("Runs").setValue("0")
+            
+            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("Outs").setValue("0")
+            
+            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("diamond").setValue("0")
+            
+            
+            self.ref.child("users").child((user?.uid)!).observeSingleEvent(of: .value, with: {(snapshot) in
+                
+                let value = snapshot.value as? NSDictionary
+                let username = value?["username"] as? String ?? ""
+                
+                self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("username").setValue(username)
+                
+            })
+            
+
+            
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let GVC = storyboard.instantiateViewController(withIdentifier: "GVC")
