@@ -38,6 +38,11 @@ class SignupViewController: ViewController {
                     self.ref.child("users").child((user?.uid)!).child("username").setValue(self.username.text)
                     self.ref.child("users").child((user?.uid)!).child("inGame").setValue("false")
                     
+                    self.ref.child("users").child((user?.uid)!).child("hits").setValue(0)
+                    self.ref.child("users").child((user?.uid)!).child("atbats").setValue(0)
+                    self.ref.child("users").child((user?.uid)!).child("doubles").setValue(0)
+                    self.ref.child("users").child((user?.uid)!).child("homers").setValue(0)
+
                     
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
                     let MTVC = storyboard.instantiateViewController(withIdentifier: "MTVC")

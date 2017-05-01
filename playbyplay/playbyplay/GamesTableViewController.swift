@@ -91,14 +91,15 @@ class GamesTableViewController: UITableViewController {
                 self.ref.child("users").child((user?.uid)!).child("gameID").setValue(self.gameID)
                 self.ref.child("users").child((user?.uid)!).child("inGame").setValue("true")
                 self.ref.child("users").child((user?.uid)!).child("score").setValue(0)
-                self.ref.child("users").child((user?.uid)!).child("money").setValue("$0")
+                self.ref.child("users").child((user?.uid)!).child("money").setValue(0)
                 self.ref.child("users").child((user?.uid)!).child("currentGame").setValue(self.games[indexPath.row])
             
-            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("Runs").setValue("0")
             
-            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("Outs").setValue("0")
+            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("Runs").setValue(0)
             
-            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("diamond").setValue("0")
+            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("Outs").setValue(0)
+            
+            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("diamond").setValue(0)
             
             
             self.ref.child("users").child((user?.uid)!).observeSingleEvent(of: .value, with: {(snapshot) in

@@ -75,6 +75,7 @@ class GameViewController: ViewController {
     
     var pickSubmitted = false
     
+    
     //var newPlay : Bool = false
     
     override func viewDidLoad() {
@@ -103,11 +104,13 @@ class GameViewController: ViewController {
                     
                     else if(self.lastPlay != prevPlay && prevPlay != "init"){
                         self.gradePlay()
+                        self.lastPick = ""
+                        let reversedResults = self.resultHistory.reversed()
+                        self.last10.text = "Your last 10:\n"+reversedResults.joined(separator: "\n")
                     }
                     
                     
-                    self.lastPick = ""
-                    self.last10.text = "Your last 10:\n"+self.resultHistory.joined(separator: "\n")
+                    
                     
                     
                 }) { (error) in
@@ -217,7 +220,7 @@ class GameViewController: ViewController {
                 
             }
             
-            self.resultHistory.append("Hit")
+            self.resultHistory.append("Home Run")
             self.playCount += 1
             
         }else if(lastPick == "none yet" || last10.text == "Your last 10:"){
@@ -240,6 +243,8 @@ class GameViewController: ViewController {
                     }
                 }
             }
+            self.resultHistory.append("Double")
+            self.playCount += 1
         }
             //double for groundoutR selection
         else if(groundoutROutcomes.contains(lastPick) && groundoutROutcomes.contains(self.lastPlay)){
@@ -257,6 +262,8 @@ class GameViewController: ViewController {
                     }
                 }
             }
+            self.resultHistory.append("Double")
+            self.playCount += 1
         }
             //double for airoutK airout selection
         else if(airoutKAiroutOutcomes.contains(lastPick) && airoutKAiroutOutcomes.contains(self.lastPlay)){
@@ -274,6 +281,8 @@ class GameViewController: ViewController {
                     }
                 }
             }
+            self.resultHistory.append("Double")
+            self.playCount += 1
         }
             //double for airoutK K selection
         else if(airoutKKOutcomes.contains(lastPick) && airoutKKOutcomes.contains(self.lastPlay)){
@@ -291,6 +300,8 @@ class GameViewController: ViewController {
                     }
                 }
             }
+            self.resultHistory.append("Double")
+            self.playCount += 1
         }
             //double for onBase Single selection
         else if(onBaseSingleOutcomes.contains(lastPick) && onBaseSingleOutcomes.contains(self.lastPlay)){
@@ -308,6 +319,8 @@ class GameViewController: ViewController {
                     }
                 }
             }
+            self.resultHistory.append("Double")
+            self.playCount += 1
         }
             //double for onBase NonSingle selction
         else if(onBaseNonSingleOutcomes.contains(lastPick) && onBaseNonSingleOutcomes.contains(self.lastPlay)){
@@ -325,6 +338,8 @@ class GameViewController: ViewController {
                     }
                 }
             }
+            self.resultHistory.append("Double")
+            self.playCount += 1
         }
             
             
@@ -345,6 +360,8 @@ class GameViewController: ViewController {
                     }
                 }
             }
+            self.resultHistory.append("Single")
+            self.playCount += 1
         }
             //single for groundoutR selection
         else if(groundoutROutcomes.contains(lastPick) && (groundoutROutcomes.contains(self.lastPlay) || groundoutLOutcomes.contains(self.lastPlay))){
@@ -362,6 +379,8 @@ class GameViewController: ViewController {
                     }
                 }
             }
+            self.resultHistory.append("Single")
+            self.playCount += 1
         }
             //single for airoutK airout selection
         else if(airoutKAiroutOutcomes.contains(lastPick) && (airoutKAiroutOutcomes.contains(self.lastPlay) || airoutKKOutcomes.contains(self.lastPlay))){
@@ -379,6 +398,8 @@ class GameViewController: ViewController {
                     }
                 }
             }
+            self.resultHistory.append("Single")
+            self.playCount += 1
         }
             //single for airoutK K selection
         else if(airoutKKOutcomes.contains(lastPick) && (airoutKKOutcomes.contains(self.lastPlay) || airoutKAiroutOutcomes.contains(self.lastPlay))){
@@ -396,6 +417,8 @@ class GameViewController: ViewController {
                     }
                 }
             }
+            self.resultHistory.append("Single")
+            self.playCount += 1
         }
             //single for onBase Single selection
         else if(onBaseSingleOutcomes.contains(lastPick) && (onBaseSingleOutcomes.contains(self.lastPlay) || onBaseNonSingleOutcomes.contains(self.lastPlay))){
@@ -413,6 +436,8 @@ class GameViewController: ViewController {
                     }
                 }
             }
+            self.resultHistory.append("Single")
+            self.playCount += 1
         }
             //single for onBase NonSingle selction
         else if(onBaseNonSingleOutcomes.contains(lastPick) && (onBaseNonSingleOutcomes.contains(self.lastPlay) || onBaseSingleOutcomes.contains(self.lastPlay))){
@@ -430,6 +455,8 @@ class GameViewController: ViewController {
                     }
                 }
             }
+            self.resultHistory.append("Single")
+            self.playCount += 1
         }
 
             
