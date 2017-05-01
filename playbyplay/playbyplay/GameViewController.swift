@@ -19,6 +19,9 @@ class GameViewController: ViewController {
     @IBOutlet weak var airoutKButton: UIButton!
     @IBOutlet weak var onBaseButton: UIButton!
     
+    @IBOutlet weak var outsText: UITextView!
+    @IBOutlet weak var runsText: UITextView!
+    
     @IBOutlet weak var menuButton: UIButton!
     
     var ref: FIRDatabaseReference!
@@ -38,6 +41,20 @@ class GameViewController: ViewController {
     var loadDiamondArray: [UIImage] = [ UIImage(named: "1.png")!, UIImage(named: "2.png")!,UIImage(named: "3.png")!, UIImage(named: "4.png")!,]
     
     var loadPupArray: [UIImage] = [ UIImage(named: "nopups.png")!, UIImage(named: "1pups.png")!,UIImage(named: "12pups.png")!, UIImage(named: "allpups.png")!,]
+    
+    var homerDiamondArray: [UIImage] = [ UIImage(named: "hit1.png")!, UIImage(named: "hit2.png")!,UIImage(named: "hit1st.png")!, UIImage(named: "hit12.png")!,UIImage(named: "hit2nd.png")!, UIImage(named: "hit23.png")!,UIImage(named: "hit3rd.png")!, UIImage(named: "hit 34.png")!,UIImage(named: "hit1.png")!,]
+    
+    var singleDiamondArray: [UIImage] = [ UIImage(named: "hit1.png")!, UIImage(named: "hit2.png")!,UIImage(named: "hit1st.png")!,]
+    
+    var doubleDiamondArray: [UIImage] = [ UIImage(named: "hit1.png")!, UIImage(named: "hit2.png")!,UIImage(named: "hit1st.png")!, UIImage(named: "hit12.png")!,UIImage(named: "hit2nd.png")!,]
+    
+    var outDiamondArray: [UIImage] = [ UIImage(named: "out.png")!,]
+    
+    var endDiamondArray: [UIImage] = [ UIImage(named: "endinning.png")!,]
+    
+    var stateArray: [UIImage] = [ UIImage(named: "1.png")!, UIImage(named: "1+2.png")!,UIImage(named: "13.png")!, UIImage(named: "loaded.png")!, UIImage(named: "2.png")!, UIImage(named: "23.png")!,UIImage(named: "3.png")!,]
+    
+    
     
     let singleButton = UIButton()
     let nonSingleButton = UIButton()
@@ -75,6 +92,10 @@ class GameViewController: ViewController {
     
     var pickSubmitted = false
     
+    var diamondState : [Int] = [0,0,0]
+    
+    var outs : Int = 0
+    var runs : Int = 0
     
     //var newPlay : Bool = false
     
@@ -175,6 +196,109 @@ class GameViewController: ViewController {
         
     }
     
+    func diamondChange(outcome: String){
+        if(outcome == "Home Run"){
+            diamond.animationImages = homerDiamondArray;
+            runs += 1 + self.diamondState.reduce(0,+)
+            self.runsText.text = "Runs: " + String(self.runs)
+            
+            self.diamondState = [0,0,0]
+            
+            diamond.startAnimating()
+            self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
+            
+        }else if(outcome == "Out"){
+            diamond.animationImages = outDiamondArray;
+            
+            if(self.outs < 2){
+                self.outs += 1
+            }else{
+                diamond.animationImages = endDiamondArray;
+                self.outs = 0
+            }
+            self.outsText.text = "Outs: " + String(self.outs)
+            
+            diamond.startAnimating()
+            self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
+            
+        }else if(outcome == "Single"){
+            diamond.animationImages = singleDiamondArray;
+            
+            if(diamondState[2] == 1){
+                self.runs += 1
+            }
+            self.runsText.text = "Runs: " + String(self.runs)
+            
+            if (diamondState == [0,0,0] || diamondState == [0,0,1]){
+                self.diamondState = [1,0,0]
+                
+            }else if( diamondState == [1,0,0] || diamondState == [1,0,1]){
+                self.diamondState = [1,1,0]
+
+            }else if( diamondState == [0,1,0] || diamondState == [0,1,1]){
+                self.diamondState = [1,0,1]
+                
+            }else if( diamondState == [1,1,1] || diamondState == [1,1,0]){
+                self.diamondState = [1,0,0]
+                
+            }
+            
+            
+        }else if(outcome == "Double"){
+            diamond.animationImages = doubleDiamondArray;
+            
+            if(diamondState[2] == 1){
+                self.runs += 1
+            }
+            if(diamondState[1] == 1){
+                self.runs += 1
+            }
+            self.runsText.text = "Runs: " + String(self.runs)
+            
+            if (diamondState == [0,0,0] || diamondState == [0,0,1] || diamondState == [0,1,1] || diamondState == [0,1,0]){
+                self.diamondState = [0,1,0]
+                
+            }else if( diamondState == [1,0,0] || diamondState == [1,0,1] || diamondState == [1,1,0] || diamondState == [1,1,1]){
+                self.diamondState = [0,1,1]
+            }
+        }
+
+        
+        diamond.startAnimating()
+        self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
+        
+    }
+    
+    func updateDiamond(){
+        diamond.stopAnimating()
+        
+        if(self.diamondState == [0,0,0]){
+            diamond.image = d0
+            
+        }else if(self.diamondState == [1,0,0]){
+            diamond.image = stateArray[0]
+            
+        }else if(self.diamondState == [1,1,0]){
+            diamond.image = stateArray[1]
+            
+        }else if(self.diamondState == [1,0,1]){
+            diamond.image = stateArray[2]
+            
+        }else if(self.diamondState == [1,1,1]){
+            diamond.image = stateArray[3]
+            
+        }else if(self.diamondState == [0,1,0]){
+            diamond.image = stateArray[4]
+            
+        }else if(self.diamondState == [0,1,1]){
+            diamond.image = stateArray[5]
+            
+        }else if(self.diamondState == [0,0,1]){
+            diamond.image = stateArray[6]
+        }
+        
+    }
+    
     func gradePlay(){
         
         let allButtons: [UIButton] = [groundoutButton, airoutKButton, onBaseButton, leftSideButton,rightSideButton,airoutButton,kButton, singleButton,nonSingleButton,overLButton,underLButton,overRButton,underRButton, lfrfButton, cfButton, kSwingingButton, kLookingButton, groundSingleButton, airSingleButton, doubleButton,tripleHomerButton]
@@ -223,6 +347,8 @@ class GameViewController: ViewController {
             self.resultHistory.append("Home Run")
             self.playCount += 1
             
+            diamondChange(outcome: "Home Run")
+            
         }else if(lastPick == "none yet" || last10.text == "Your last 10:"){
             
         }
@@ -245,6 +371,8 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Double")
             self.playCount += 1
+            
+            diamondChange(outcome: "Double")
         }
             //double for groundoutR selection
         else if(groundoutROutcomes.contains(lastPick) && groundoutROutcomes.contains(self.lastPlay)){
@@ -264,6 +392,8 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Double")
             self.playCount += 1
+            
+            diamondChange(outcome: "Double")
         }
             //double for airoutK airout selection
         else if(airoutKAiroutOutcomes.contains(lastPick) && airoutKAiroutOutcomes.contains(self.lastPlay)){
@@ -283,6 +413,8 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Double")
             self.playCount += 1
+            
+            diamondChange(outcome: "Double")
         }
             //double for airoutK K selection
         else if(airoutKKOutcomes.contains(lastPick) && airoutKKOutcomes.contains(self.lastPlay)){
@@ -302,6 +434,8 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Double")
             self.playCount += 1
+            
+            diamondChange(outcome: "Double")
         }
             //double for onBase Single selection
         else if(onBaseSingleOutcomes.contains(lastPick) && onBaseSingleOutcomes.contains(self.lastPlay)){
@@ -321,6 +455,8 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Double")
             self.playCount += 1
+            
+            diamondChange(outcome: "Double")
         }
             //double for onBase NonSingle selction
         else if(onBaseNonSingleOutcomes.contains(lastPick) && onBaseNonSingleOutcomes.contains(self.lastPlay)){
@@ -340,6 +476,8 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Double")
             self.playCount += 1
+            
+            diamondChange(outcome: "Double")
         }
             
             
@@ -362,6 +500,8 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Single")
             self.playCount += 1
+            
+            diamondChange(outcome: "Single")
         }
             //single for groundoutR selection
         else if(groundoutROutcomes.contains(lastPick) && (groundoutROutcomes.contains(self.lastPlay) || groundoutLOutcomes.contains(self.lastPlay))){
@@ -381,6 +521,8 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Single")
             self.playCount += 1
+            
+            diamondChange(outcome: "Single")
         }
             //single for airoutK airout selection
         else if(airoutKAiroutOutcomes.contains(lastPick) && (airoutKAiroutOutcomes.contains(self.lastPlay) || airoutKKOutcomes.contains(self.lastPlay))){
@@ -400,6 +542,8 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Single")
             self.playCount += 1
+            
+            diamondChange(outcome: "Single")
         }
             //single for airoutK K selection
         else if(airoutKKOutcomes.contains(lastPick) && (airoutKKOutcomes.contains(self.lastPlay) || airoutKAiroutOutcomes.contains(self.lastPlay))){
@@ -419,6 +563,8 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Single")
             self.playCount += 1
+            
+            diamondChange(outcome: "Single")
         }
             //single for onBase Single selection
         else if(onBaseSingleOutcomes.contains(lastPick) && (onBaseSingleOutcomes.contains(self.lastPlay) || onBaseNonSingleOutcomes.contains(self.lastPlay))){
@@ -438,6 +584,8 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Single")
             self.playCount += 1
+            
+            diamondChange(outcome: "Single")
         }
             //single for onBase NonSingle selction
         else if(onBaseNonSingleOutcomes.contains(lastPick) && (onBaseNonSingleOutcomes.contains(self.lastPlay) || onBaseSingleOutcomes.contains(self.lastPlay))){
@@ -457,6 +605,8 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Single")
             self.playCount += 1
+            
+            diamondChange(outcome: "Single")
         }
 
             
@@ -468,6 +618,8 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Out")
             self.playCount += 1
+            
+            diamondChange(outcome: "Out")
         }
         
     }
@@ -487,6 +639,8 @@ class GameViewController: ViewController {
         powerups.stopAnimating()
         diamond.image = d0;
         powerups.image = allpups;
+        
+        diamond.animationDuration = 1.25
     }
     @IBAction func menuSelected(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
