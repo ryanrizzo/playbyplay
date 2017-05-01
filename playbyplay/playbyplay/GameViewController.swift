@@ -23,8 +23,12 @@ class GameViewController: ViewController {
     @IBOutlet weak var runsText: UITextView!
     
     @IBOutlet weak var menuButton: UIButton!
+    @IBOutlet weak var statsText: UITextView!
+    
     
     var ref: FIRDatabaseReference!
+    
+    let user = FIRAuth.auth()?.currentUser
     
     var playCount : Int = 1
     
@@ -52,9 +56,9 @@ class GameViewController: ViewController {
     
     var endDiamondArray: [UIImage] = [ UIImage(named: "endinning.png")!,]
     
-    var stateArray: [UIImage] = [ UIImage(named: "1.png")!, UIImage(named: "1+2.png")!,UIImage(named: "13.png")!, UIImage(named: "loaded.png")!, UIImage(named: "2.png")!, UIImage(named: "23.png")!,UIImage(named: "3.png")!,]
+    var stateArray: [UIImage] = [ UIImage(named: "0.png")!, UIImage(named: "1.png")!, UIImage(named: "1+2.png")!,UIImage(named: "13.png")!, UIImage(named: "loaded.png")!, UIImage(named: "2.png")!, UIImage(named: "23.png")!,UIImage(named: "3.png")!,]
     
-    
+    var states: [[Int]] = [[0,0,0],[1,0,0],[1,1,0],[1,0,1],[1,1,1],[0,1,0],[0,1,1],[0,0,1],]
     
     let singleButton = UIButton()
     let nonSingleButton = UIButton()
@@ -93,12 +97,26 @@ class GameViewController: ViewController {
     var pickSubmitted = false
     
     var diamondState : [Int] = [0,0,0]
+    var diamondIndex : Int = 0
     
     var outs : Int = 0
     var runs : Int = 0
     
+    var atbats : Int = 0
+    var hits : Int = 0
+    var doubles : Int = 0
+    var homers : Int = 0
+    
+    var avg : Double = 0
+    var slg : Double = 0
+    
+    let defaults = UserDefaults.standard
+    
+    
+    
     //var newPlay : Bool = false
     
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -110,13 +128,33 @@ class GameViewController: ViewController {
             let currUserDict = snapshot.value as? NSDictionary
             
             self.currentGame = currUserDict?.value(forKey: "currentGame") as! String
-            
+                self.atbats = currUserDict?.value(forKey: "atbats") as! Int
+                self.hits = currUserDict?.value(forKey: "hits") as! Int
+                self.doubles = currUserDict?.value(forKey: "doubles") as! Int
+                self.homers = currUserDict?.value(forKey: "homers") as! Int
+                
                 //listen for new plays
                 self.ref.child("games").child(self.currentGame).observe(.value, with: { (snapshot) in
                     let gameDict = snapshot.value as? NSDictionary
                     //prevPlay is to see whether the actual value changed in the database
                     let prevPlay = self.lastPlay
                     self.lastPlay = gameDict?.value(forKey: "lastPlay") as! String
+                    self.outs = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".outs") as! Int
+                    self.runs = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".runs") as! Int
+                    self.diamondIndex = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".diamond") as! Int
+                    
+                    
+                    
+                    
+                    self.runsText.text = "Runs: " + String(self.runs)
+                    self.outsText.text = "Outs: " + String(self.outs)
+                    self.diamondState = self.states[self.diamondIndex]
+                    self.diamond.image = self.stateArray[self.diamondIndex]
+                    
+                    self.updateStats()
+                    
+                    
+                    
                     
                     //picks must be in by this point
                     if(self.lastPlay == "closed"){
@@ -126,8 +164,8 @@ class GameViewController: ViewController {
                     else if(self.lastPlay != prevPlay && prevPlay != "init"){
                         self.gradePlay()
                         self.lastPick = ""
-                        let reversedResults = self.resultHistory.reversed()
-                        self.last10.text = "Your last 10:\n"+reversedResults.joined(separator: "\n")
+                        //let reversedResults = self.resultHistory.reversed()
+                        self.last10.text = "Your last 10:\n"+self.resultHistory.joined(separator: "\n")
                     }
                     
                     
@@ -152,15 +190,40 @@ class GameViewController: ViewController {
         
         
         // Do any additional setup after loading the view.
-        diamond.animationImages = loadDiamondArray;
-        diamond.animationDuration = 0.65
-        diamond.animationRepeatCount = 1
+        
+        let outsTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.outsTapDetected)))
+        let runsTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.runsTapDetected)))
+        let diamondTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.diamondTapDetected)))
+        let pupTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.pupTapDetected)))
+        let last10Tap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.last10TapDetected)))
+        
+        last10Tap.numberOfTapsRequired = 1
+        pupTap.numberOfTapsRequired = 1
+        runsTap.numberOfTapsRequired = 1
+        outsTap.numberOfTapsRequired = 1
+        diamondTap.numberOfTapsRequired = 1
+        last10.addGestureRecognizer(last10Tap)
+        powerups.addGestureRecognizer(pupTap)
+        diamond.addGestureRecognizer(diamondTap)
+        runsText.addGestureRecognizer(runsTap)
+        outsText.addGestureRecognizer(outsTap)
+        
+        
+        self.resultHistory = [defaults.value(forKey: "1") as! String, defaults.value(forKey: "2") as! String,defaults.value(forKey: "3") as! String,defaults.value(forKey: "4") as! String,defaults.value(forKey:"5") as! String,defaults.value(forKey: "6") as! String,defaults.value(forKey: "7") as! String,defaults.value(forKey: "8") as! String,defaults.value(forKey: "9") as! String,defaults.value(forKey: "10") as! String,]
+        
+        //let reversedResults = self.resultHistory.reversed()
+        self.last10.text = "Your last 10:\n"+self.resultHistory.joined(separator: "\n")
+        
+        //diamond.animationImages = loadDiamondArray;
+        //diamond.animationDuration = 0.65
+        //diamond.animationRepeatCount = 1
         
         
         
-        powerups.animationImages = loadPupArray
-        powerups.animationDuration = 0.65
-        powerups.animationRepeatCount = 1
+        //powerups.animationImages = loadPupArray
+        //powerups.animationDuration = 0.65
+        //powerups.animationRepeatCount = 1
+        powerups.image = allpups;
         
         showThirdQsForK()
         showThirdQsForAirout()
@@ -184,6 +247,63 @@ class GameViewController: ViewController {
 
     }
     
+    func last10TapDetected(){
+        
+    }
+    
+    func pupTapDetected() {
+        let pupAlert = UIAlertController(title: "Power Innings", message: "There are 3 Power Inning types:\n\nSpeed Demon: Your runners advance an extra base on a hit\n\nAll Triples: Any hit counts as a triple in the game (but not for your Career Stats\n\nDouble Points: All runs count as 2 runs\n\nPower Innings are randomly awarded, and they last until you guess 3 at bats wrong.", preferredStyle: .alert)
+        let okAction = UIAlertAction(
+        title: "OK", style: UIAlertActionStyle.default) { (action) in
+            
+        }
+        pupAlert.addAction(okAction)
+        self.present(pupAlert, animated:true)
+    }
+    func outsTapDetected() {
+        print("outs Clicked")
+        let outAlert = UIAlertController(title: "Outs", message: "There are 3 tiers of questions regarding each at bat.  If you select them all wrong, you get an out.  If you get 3 outs, the bases clear.", preferredStyle: .alert)
+        let okAction = UIAlertAction(
+        title: "OK", style: UIAlertActionStyle.default) { (action) in
+            
+        }
+        outAlert.addAction(okAction)
+        self.present(outAlert, animated:true)
+    }
+    func runsTapDetected() {
+        let runsAlert = UIAlertController(title: "Runs", message: "The goal is to score as many runs as possible before the game ends.  You do that by guessing at bat outcomes correctly.  The more runs you score, the better your chances of winning money!", preferredStyle: .alert)
+        let okAction = UIAlertAction(
+        title: "OK", style: UIAlertActionStyle.default) { (action) in
+            
+        }
+        runsAlert.addAction(okAction)
+        self.present(runsAlert, animated:true)    }
+    func diamondTapDetected() {
+        let diamondAlert = UIAlertController(title: "Diamond", message: "The diamond shows your runners on base.  Runners on base clear once you get 3 outs.  You try to knock runners in by guessing at bat outcomes correctly.  For example, if there is a man on second and you hit a double, you score a run!", preferredStyle: .alert)
+        let okAction = UIAlertAction(
+        title: "OK", style: UIAlertActionStyle.default) { (action) in
+            
+        }
+        diamondAlert.addAction(okAction)
+        self.present(diamondAlert, animated:true)
+    }
+    
+    
+    func updateStats(){
+        print("self.atbats: ",self.atbats)
+        if(self.hits > 0){
+            self.avg = Double(self.hits)/Double(self.atbats)
+            self.slg = ( Double(self.hits-self.doubles-self.homers) + Double(2*self.doubles) + Double(4*self.homers) )/Double(self.atbats)
+            
+            self.avg = (self.avg * 1000).rounded() / 1000
+            self.slg = (self.slg * 1000).rounded() / 1000
+            
+            self.statsText.text = "Career Stats:\nAVG: "+String(self.avg)+"\nSLG: "+String(self.slg)
+        }else{
+            self.statsText.text = "Career Stats:\nAVG:\nSLG:"
+        }
+    }
+    
     func closeBallot(){
         let allButtons: [UIButton] = [groundoutButton, airoutKButton, onBaseButton, leftSideButton,rightSideButton,airoutButton,kButton, singleButton,nonSingleButton,overLButton,underLButton,overRButton,underRButton, lfrfButton, cfButton, kSwingingButton, kLookingButton, groundSingleButton, airSingleButton, doubleButton,tripleHomerButton]
 
@@ -202,8 +322,15 @@ class GameViewController: ViewController {
             runs += 1 + self.diamondState.reduce(0,+)
             self.runsText.text = "Runs: " + String(self.runs)
             
-            self.diamondState = [0,0,0]
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("runs").setValue(self.runs)
+            self.ref.child("users").child((user?.uid)!).child("homers").setValue(self.homers+1)
+            self.ref.child("users").child((user?.uid)!).child("hits").setValue(self.hits+1)
+            self.ref.child("users").child((user?.uid)!).child("atbats").setValue(self.atbats+1)
+            self.homers += 1
+            self.atbats += 1
+            self.hits += 1
             
+            self.diamondState = [0,0,0]
             diamond.startAnimating()
             self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
             
@@ -217,6 +344,13 @@ class GameViewController: ViewController {
                 self.outs = 0
             }
             self.outsText.text = "Outs: " + String(self.outs)
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("outs").setValue(self.outs)
+            
+            self.atbats += 1
+            self.ref.child("users").child((user?.uid)!).child("atbats").setValue(self.atbats)
+            
+            
+            
             
             diamond.startAnimating()
             self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
@@ -228,6 +362,14 @@ class GameViewController: ViewController {
                 self.runs += 1
             }
             self.runsText.text = "Runs: " + String(self.runs)
+            
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("runs").setValue(self.runs)
+
+            self.ref.child("users").child((user?.uid)!).child("hits").setValue(self.hits+1)
+            self.ref.child("users").child((user?.uid)!).child("atbats").setValue(self.atbats+1)
+
+            self.atbats += 1
+            self.hits += 1
             
             if (diamondState == [0,0,0] || diamondState == [0,0,1]){
                 self.diamondState = [1,0,0]
@@ -255,6 +397,14 @@ class GameViewController: ViewController {
             }
             self.runsText.text = "Runs: " + String(self.runs)
             
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("runs").setValue(self.runs)
+            self.ref.child("users").child((user?.uid)!).child("doubles").setValue(self.doubles+1)
+            self.ref.child("users").child((user?.uid)!).child("hits").setValue(self.hits+1)
+            self.ref.child("users").child((user?.uid)!).child("atbats").setValue(self.atbats+1)
+            self.doubles += 1
+            self.atbats += 1
+            self.hits += 1
+            
             if (diamondState == [0,0,0] || diamondState == [0,0,1] || diamondState == [0,1,1] || diamondState == [0,1,0]){
                 self.diamondState = [0,1,0]
                 
@@ -263,6 +413,7 @@ class GameViewController: ViewController {
             }
         }
 
+        updateStats()
         
         diamond.startAnimating()
         self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
@@ -270,33 +421,63 @@ class GameViewController: ViewController {
     }
     
     func updateDiamond(){
+        
         diamond.stopAnimating()
         
+        
+        
         if(self.diamondState == [0,0,0]){
-            diamond.image = d0
+            diamond.image = stateArray[0]
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(0)
             
         }else if(self.diamondState == [1,0,0]){
-            diamond.image = stateArray[0]
+            diamond.image = stateArray[1]
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(1)
             
         }else if(self.diamondState == [1,1,0]){
-            diamond.image = stateArray[1]
+            diamond.image = stateArray[2]
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(2)
             
         }else if(self.diamondState == [1,0,1]){
-            diamond.image = stateArray[2]
+            diamond.image = stateArray[3]
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(3)
             
         }else if(self.diamondState == [1,1,1]){
-            diamond.image = stateArray[3]
+            diamond.image = stateArray[4]
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(4)
             
         }else if(self.diamondState == [0,1,0]){
-            diamond.image = stateArray[4]
+            diamond.image = stateArray[5]
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(5)
             
         }else if(self.diamondState == [0,1,1]){
-            diamond.image = stateArray[5]
+            diamond.image = stateArray[6]
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(6)
             
         }else if(self.diamondState == [0,0,1]){
-            diamond.image = stateArray[6]
+            diamond.image = stateArray[7]
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(7)
         }
         
+    }
+    
+    func updateDefaults(outcome: String){
+        defaults.set(defaults.value(forKey: "9") , forKey: "10")
+        defaults.set(defaults.value(forKey: "8") , forKey: "9")
+        defaults.set(defaults.value(forKey: "7") , forKey: "8")
+        defaults.set(defaults.value(forKey: "6") , forKey: "7")
+        defaults.set(defaults.value(forKey: "5") , forKey: "6")
+        defaults.set(defaults.value(forKey: "4") , forKey: "5")
+        defaults.set(defaults.value(forKey: "3") , forKey: "4")
+        defaults.set(defaults.value(forKey: "2") , forKey: "3")
+        defaults.set(defaults.value(forKey: "1") , forKey: "2")
+        defaults.set(outcome, forKey: "1")
+        //print(defaults.value(forKey: "1"))
+        
+        self.resultHistory = [defaults.value(forKey: "1") as! String, defaults.value(forKey: "2") as! String,defaults.value(forKey: "3") as! String,defaults.value(forKey: "4") as! String,defaults.value(forKey:"5") as! String,defaults.value(forKey: "6") as! String,defaults.value(forKey: "7") as! String,defaults.value(forKey: "8") as! String,defaults.value(forKey: "9") as! String,defaults.value(forKey: "10") as! String,]
+        
+        //let reversedResults = self.resultHistory.reversed()
+        self.last10.text = "Your last 10:\n"+self.resultHistory.joined(separator: "\n")
     }
     
     func gradePlay(){
@@ -313,7 +494,7 @@ class GameViewController: ViewController {
                 button.isHighlighted = false
                 button.backgroundColor = UIColor.darkGray
                 button.isEnabled = true
-                print(button.currentTitle!, button.title)
+               
                 
                 button.setTitleColor(UIColor.white, for: .disabled)
                 button.setTitleColor(UIColor.black, for: .selected)
@@ -345,6 +526,8 @@ class GameViewController: ViewController {
             }
             
             self.resultHistory.append("Home Run")
+            updateDefaults(outcome: "Home Run")
+            
             self.playCount += 1
             
             diamondChange(outcome: "Home Run")
@@ -370,6 +553,8 @@ class GameViewController: ViewController {
                 }
             }
             self.resultHistory.append("Double")
+            updateDefaults(outcome: "Double")
+            
             self.playCount += 1
             
             diamondChange(outcome: "Double")
@@ -391,6 +576,7 @@ class GameViewController: ViewController {
                 }
             }
             self.resultHistory.append("Double")
+            updateDefaults(outcome: "Double")
             self.playCount += 1
             
             diamondChange(outcome: "Double")
@@ -412,6 +598,8 @@ class GameViewController: ViewController {
                 }
             }
             self.resultHistory.append("Double")
+            updateDefaults(outcome: "Double")
+            
             self.playCount += 1
             
             diamondChange(outcome: "Double")
@@ -433,6 +621,8 @@ class GameViewController: ViewController {
                 }
             }
             self.resultHistory.append("Double")
+            updateDefaults(outcome: "Double")
+            
             self.playCount += 1
             
             diamondChange(outcome: "Double")
@@ -454,6 +644,8 @@ class GameViewController: ViewController {
                 }
             }
             self.resultHistory.append("Double")
+            updateDefaults(outcome: "Double")
+            
             self.playCount += 1
             
             diamondChange(outcome: "Double")
@@ -475,6 +667,8 @@ class GameViewController: ViewController {
                 }
             }
             self.resultHistory.append("Double")
+            updateDefaults(outcome: "Double")
+            
             self.playCount += 1
             
             diamondChange(outcome: "Double")
@@ -499,6 +693,8 @@ class GameViewController: ViewController {
                 }
             }
             self.resultHistory.append("Single")
+            updateDefaults(outcome: "Single")
+            
             self.playCount += 1
             
             diamondChange(outcome: "Single")
@@ -520,6 +716,9 @@ class GameViewController: ViewController {
                 }
             }
             self.resultHistory.append("Single")
+            updateDefaults(outcome: "Single")
+            
+            
             self.playCount += 1
             
             diamondChange(outcome: "Single")
@@ -541,6 +740,8 @@ class GameViewController: ViewController {
                 }
             }
             self.resultHistory.append("Single")
+            updateDefaults(outcome: "Single")
+            
             self.playCount += 1
             
             diamondChange(outcome: "Single")
@@ -562,6 +763,8 @@ class GameViewController: ViewController {
                 }
             }
             self.resultHistory.append("Single")
+            updateDefaults(outcome: "Single")
+            
             self.playCount += 1
             
             diamondChange(outcome: "Single")
@@ -583,6 +786,8 @@ class GameViewController: ViewController {
                 }
             }
             self.resultHistory.append("Single")
+            updateDefaults(outcome: "Single")
+            
             self.playCount += 1
             
             diamondChange(outcome: "Single")
@@ -604,6 +809,8 @@ class GameViewController: ViewController {
                 }
             }
             self.resultHistory.append("Single")
+            updateDefaults(outcome: "Single")
+            
             self.playCount += 1
             
             diamondChange(outcome: "Single")
@@ -617,6 +824,8 @@ class GameViewController: ViewController {
                 }
             }
             self.resultHistory.append("Out")
+            updateDefaults(outcome: "Out")
+            
             self.playCount += 1
             
             diamondChange(outcome: "Out")
@@ -625,9 +834,9 @@ class GameViewController: ViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        diamond.startAnimating()
+        //diamond.startAnimating()
         self.perform(#selector(GameViewController.afterAnimation), with: nil, afterDelay: diamond.animationDuration)
-        powerups.startAnimating()
+        //powerups.startAnimating()
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -635,10 +844,10 @@ class GameViewController: ViewController {
     }
     
     func afterAnimation() {
-        diamond.stopAnimating()
-        powerups.stopAnimating()
-        diamond.image = d0;
-        powerups.image = allpups;
+        //diamond.stopAnimating()
+        //powerups.stopAnimating()
+        updateDiamond()
+        
         
         diamond.animationDuration = 1.25
     }
@@ -764,7 +973,7 @@ class GameViewController: ViewController {
         if(singleButton.isHidden || nonSingleButton.isHidden){
             singleButton.isHidden = false
             nonSingleButton.isHidden = false
-            print("title label: ", singleButton.titleLabel!)
+            
             if(singleButton.isSelected){
                 showThirdQsForSingle()
             }

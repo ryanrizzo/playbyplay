@@ -320,11 +320,11 @@
                                 <fontDescription key="fontDescription" name="AvenirNext-Bold" family="Avenir Next" pointSize="24"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="U6N-m2-2zt">
+                            <imageView multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="U6N-m2-2zt">
                                 <rect key="frame" x="108" y="13" width="159" height="160"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1QD-bq-qvd">
+                            <imageView multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1QD-bq-qvd">
                                 <rect key="frame" x="5" y="116" width="133" height="57"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
@@ -395,6 +395,13 @@
                                     <action selector="menuSelected:" destination="BYZ-38-t0r" eventType="touchUpInside" id="W45-w0-Bhf"/>
                                 </connections>
                             </button>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" editable="NO" text="AVG:" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kJW-KT-7KU">
+                                <rect key="frame" x="5" y="340" width="242" height="97"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
@@ -409,6 +416,7 @@
                         <outlet property="outsText" destination="8MX-VW-7K2" id="Exf-Y1-RTW"/>
                         <outlet property="powerups" destination="1QD-bq-qvd" id="zeE-F3-Zcy"/>
                         <outlet property="runsText" destination="h1v-dn-QMC" id="BZG-mQ-8Bh"/>
+                        <outlet property="statsText" destination="kJW-KT-7KU" id="7IA-bz-Evf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -424,7 +432,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="yrB-iZ-PXI">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="reuseIdentifier" id="yrB-iZ-PXI">
                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yrB-iZ-PXI" id="z1l-pT-LDD">
@@ -449,7 +457,7 @@
         <!--Profile-->
         <scene sceneID="fac-4h-g6r">
             <objects>
-                <viewController id="3NK-pk-D2n" customClass="ProfileViewController" customModule="playbyplay" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PVC" id="3NK-pk-D2n" customClass="ProfileViewController" customModule="playbyplay" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="uTs-UF-L3O"/>
                         <viewControllerLayoutGuide type="bottom" id="c4v-Rd-Yxe"/>

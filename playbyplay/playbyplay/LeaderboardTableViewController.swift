@@ -7,12 +7,60 @@
 //
 
 import UIKit
+import Firebase
 
 class LeaderboardTableViewController: UITableViewController {
 
+    var currentGame : String = ""
+    
+    var scores : [Int] = []
+    var names : [String] = []
+    
+    var ref: FIRDatabaseReference!
+    
+    let user = FIRAuth.auth()?.currentUser
+    
+    struct User { //starting with a structure to hold user data
+        //var firebaseKey : String?
+        var runs: Int?
+        var username: String?
+    }
+
+    var userArray = [User]()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        //set currentGame
+        
+        self.ref = FIRDatabase.database().reference()
+        
+        self.ref.child("users").child((user?.uid)!).observeSingleEvent(of: .value, with: { (snapshot) in
+            let currUserDict = snapshot.value as? NSDictionary
+            
+            self.currentGame = currUserDict?.value(forKey: "currentGame") as! String
 
+        let query = self.ref.child("games").child(self.currentGame).child("leaderboard").queryOrdered(byChild: "runs")
+            
+            query.observe(.value, with: { (snapshot) in
+                for child in snapshot.value as! [String:AnyObject]{
+                    let runs = child.value["runs"] as! Int
+                    let username = child.value["username"] as! String
+                    let u = User(runs: runs, username: username)
+                    
+                    self.userArray.append(u)
+                    
+                    print("\n\n\n\n\n\n\n\n\n\n\nchild:\n",self.userArray)
+                }
+                self.tableView.reloadData()
+            })
+            
+            
+        }) { (error) in
+            print(error.localizedDescription)
+        }
+
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -29,23 +77,40 @@ class LeaderboardTableViewController: UITableViewController {
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return 0
+        
+        return self.userArray.count
     }
 
-    /*
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
+        
+        let rankings = Array(self.userArray.reversed())
 
+        let x : Int = rankings[indexPath.row].runs!
+        
+        let runString = String(x)
+        
+        
+        
+        if(indexPath.row == 0){
+            cell.textLabel?.text = rankings[indexPath.row].username! + "        Runs: " + runString + "         $10"
+        }else if(indexPath.row == 1){
+            cell.textLabel?.text = rankings[indexPath.row].username! + "        Runs: " + runString + "         $5"
+        }else{
+            cell.textLabel?.text = rankings[indexPath.row].username! + "        Runs: " + runString + "         $0"
+        }
+        
         // Configure the cell...
 
         return cell
     }
-    */
+    
 
     /*
     // Override to support conditional editing of the table view.

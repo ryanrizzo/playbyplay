@@ -17,7 +17,7 @@ class SignupViewController: ViewController {
     @IBOutlet weak var signupButton: UIButton!
     
     var ref: FIRDatabaseReference!
-    
+    let defaults = UserDefaults.standard
     
     
     override func viewDidLoad() {
@@ -43,6 +43,17 @@ class SignupViewController: ViewController {
                     self.ref.child("users").child((user?.uid)!).child("doubles").setValue(0)
                     self.ref.child("users").child((user?.uid)!).child("homers").setValue(0)
 
+                    self.defaults.set("", forKey: "1")
+                    self.defaults.set(self.defaults.value(forKey: "1") , forKey: "10")
+                    self.defaults.set(self.defaults.value(forKey: "1") , forKey: "9")
+                    self.defaults.set(self.defaults.value(forKey: "1") , forKey: "8")
+                    self.defaults.set(self.defaults.value(forKey: "1") , forKey: "7")
+                    self.defaults.set(self.defaults.value(forKey: "1") , forKey: "6")
+                    self.defaults.set(self.defaults.value(forKey: "1") , forKey: "5")
+                    self.defaults.set(self.defaults.value(forKey: "1") , forKey: "4")
+                    self.defaults.set(self.defaults.value(forKey: "1") , forKey: "3")
+                    self.defaults.set(self.defaults.value(forKey: "1") , forKey: "2")
+                    
                     
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
                     let MTVC = storyboard.instantiateViewController(withIdentifier: "MTVC")

@@ -95,9 +95,9 @@ class GamesTableViewController: UITableViewController {
                 self.ref.child("users").child((user?.uid)!).child("currentGame").setValue(self.games[indexPath.row])
             
             
-            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("Runs").setValue(0)
+            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("runs").setValue(0)
             
-            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("Outs").setValue(0)
+            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("outs").setValue(0)
             
             self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("diamond").setValue(0)
             
