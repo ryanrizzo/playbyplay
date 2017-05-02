@@ -470,8 +470,9 @@ class GameViewController: ViewController {
         
         if(self.diamondState == [0,0,0]){
             diamond.image = stateArray[0]
-            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(0)
-            
+            if(self.currentGame != ""){
+                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(0)
+            }
         }else if(self.diamondState == [1,0,0]){
             diamond.image = stateArray[1]
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(1)

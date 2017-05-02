@@ -35,7 +35,7 @@ class FirstViewController: ViewController {
             self.ref.child("users").child((user?.uid)!).observeSingleEvent(of: .value, with: { (snapshot) in
                 let value = snapshot.value as? NSDictionary
                 self.inGame = value?["inGame"] as? String ?? ""
-                print(self.inGame)
+                print("\n\n\n\n\n\n\n\n\n\n\n\ninGame:\n",self.inGame)
                 
                 if(self.inGame.isEqual("true")){
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -44,7 +44,7 @@ class FirstViewController: ViewController {
                     self.present(GVC, animated: true, completion: nil)
                 }
                     
-                else{
+                else if(self.inGame.isEqual("false")){
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
                     let MTVC = storyboard.instantiateViewController(withIdentifier: "MTVC")
                     let MNC = UINavigationController(rootViewController: MTVC)

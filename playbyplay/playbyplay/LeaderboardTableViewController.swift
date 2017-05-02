@@ -81,27 +81,32 @@ class LeaderboardTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         
-        return self.userArray.count
+        return self.userArray.count + 20
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
         
+        cell.textLabel?.textColor = UIColor.white
+        cell.backgroundColor = UIColor.black
+        
         let rankings = Array(self.userArray.reversed())
-
-        let x : Int = rankings[indexPath.row].runs!
         
-        let runString = String(x)
+        if(indexPath.row < rankings.count){
+            let x : Int = rankings[indexPath.row].runs!
+        
+            let runString = String(x)
         
         
         
-        if(indexPath.row == 0){
-            cell.textLabel?.text = rankings[indexPath.row].username! + "        Runs: " + runString + "         $10"
-        }else if(indexPath.row == 1){
-            cell.textLabel?.text = rankings[indexPath.row].username! + "        Runs: " + runString + "         $5"
-        }else{
-            cell.textLabel?.text = rankings[indexPath.row].username! + "        Runs: " + runString + "         $0"
+            if(indexPath.row == 0){
+                cell.textLabel?.text = rankings[indexPath.row].username! + "        Runs: " + runString + "         $10"
+            }else if(indexPath.row == 1){
+                cell.textLabel?.text = rankings[indexPath.row].username! + "        Runs: " + runString + "         $5"
+            }else if(indexPath.row < self.userArray.count){
+                cell.textLabel?.text = rankings[indexPath.row].username! + "        Runs: " + runString + "         $0"
+            }
         }
         
         // Configure the cell...

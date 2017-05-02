@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		151C36631EB184F4001F9384 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151C36621EB184F4001F9384 /* ProfileViewController.swift */; };
 		151C36651EB185AF001F9384 /* LeaderboardTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151C36641EB185AF001F9384 /* LeaderboardTableViewController.swift */; };
 		1530A9AD1E5C0C19009B7813 /* 0.png in Resources */ = {isa = PBXBuildFile; fileRef = 1530A99B1E5C0C19009B7813 /* 0.png */; };
 		1530A9AE1E5C0C19009B7813 /* 1+2.png in Resources */ = {isa = PBXBuildFile; fileRef = 1530A99C1E5C0C19009B7813 /* 1+2.png */; };
@@ -36,6 +35,7 @@
 		1541A3761E5BED4F00060466 /* playbyplayUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1541A3751E5BED4F00060466 /* playbyplayUITests.swift */; };
 		1541A3841E5BF89F00060466 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1541A3831E5BF89F00060466 /* FirstViewController.swift */; };
 		1541A3861E5BF8E400060466 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1541A3851E5BF8E400060466 /* GameViewController.swift */; };
+		1561B4371EB8E3F800B29385 /* ProfileTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1561B4361EB8E3F800B29385 /* ProfileTableViewController.swift */; };
 		156DC1A81E5E1395006D60C3 /* 12pups.png in Resources */ = {isa = PBXBuildFile; fileRef = 156DC1A01E5E1395006D60C3 /* 12pups.png */; };
 		156DC1A91E5E1395006D60C3 /* 13pups.png in Resources */ = {isa = PBXBuildFile; fileRef = 156DC1A11E5E1395006D60C3 /* 13pups.png */; };
 		156DC1AA1E5E1395006D60C3 /* 1pups.png in Resources */ = {isa = PBXBuildFile; fileRef = 156DC1A21E5E1395006D60C3 /* 1pups.png */; };
@@ -75,7 +75,6 @@
 
 /* Begin PBXFileReference section */
 		0ED85E79B8D431BD8D56B971 /* Pods-playbyplayTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-playbyplayTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-playbyplayTests/Pods-playbyplayTests.release.xcconfig"; sourceTree = "<group>"; };
-		151C36621EB184F4001F9384 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		151C36641EB185AF001F9384 /* LeaderboardTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeaderboardTableViewController.swift; sourceTree = "<group>"; };
 		1530A99B1E5C0C19009B7813 /* 0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 0.png; sourceTree = "<group>"; };
 		1530A99C1E5C0C19009B7813 /* 1+2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "1+2.png"; sourceTree = "<group>"; };
@@ -110,6 +109,7 @@
 		1541A3771E5BED4F00060466 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1541A3831E5BF89F00060466 /* FirstViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
 		1541A3851E5BF8E400060466 /* GameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
+		1561B4361EB8E3F800B29385 /* ProfileTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTableViewController.swift; sourceTree = "<group>"; };
 		156DC1A01E5E1395006D60C3 /* 12pups.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 12pups.png; sourceTree = "<group>"; };
 		156DC1A11E5E1395006D60C3 /* 13pups.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 13pups.png; sourceTree = "<group>"; };
 		156DC1A21E5E1395006D60C3 /* 1pups.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1pups.png; sourceTree = "<group>"; };
@@ -217,8 +217,8 @@
 				1541A3551E5BED4E00060466 /* AppDelegate.swift */,
 				1541A3571E5BED4E00060466 /* ViewController.swift */,
 				15A19D961E651AFB00839B51 /* Main.storyboard */,
-				151C36621EB184F4001F9384 /* ProfileViewController.swift */,
 				151C36641EB185AF001F9384 /* LeaderboardTableViewController.swift */,
+				1561B4361EB8E3F800B29385 /* ProfileTableViewController.swift */,
 				15A19D941E6505BD00839B51 /* GamesTableViewController.swift */,
 				15A19D901E64C5CC00839B51 /* MenuNavigationController.swift */,
 				15A19D8E1E632E8000839B51 /* MenuTableViewController.swift */,
@@ -611,10 +611,10 @@
 				15A19D911E64C5CC00839B51 /* MenuNavigationController.swift in Sources */,
 				1541A3861E5BF8E400060466 /* GameViewController.swift in Sources */,
 				15A19D951E6505BD00839B51 /* GamesTableViewController.swift in Sources */,
-				151C36631EB184F4001F9384 /* ProfileViewController.swift in Sources */,
 				1541A3841E5BF89F00060466 /* FirstViewController.swift in Sources */,
 				1541A3581E5BED4E00060466 /* ViewController.swift in Sources */,
 				15A19D891E61342E00839B51 /* LoginViewController.swift in Sources */,
+				1561B4371EB8E3F800B29385 /* ProfileTableViewController.swift in Sources */,
 				1541A3561E5BED4E00060466 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
