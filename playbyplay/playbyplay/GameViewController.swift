@@ -112,7 +112,13 @@ class GameViewController: ViewController {
     
     let defaults = UserDefaults.standard
     
+    struct User { //starting with a structure to hold user data
+        //var firebaseKey : String?
+        var runs: Int?
+        var username: String?
+    }
     
+    var userArray = [User]()
     
     //var newPlay : Bool = false
     
@@ -170,6 +176,24 @@ class GameViewController: ViewController {
                     
                     
                     
+                    //for leaderboard
+                    let query = self.ref.child("games").child(self.currentGame).child("leaderboard").queryOrdered(byChild: "runs")
+                    
+                    query.observe(.value, with: { (snapshot) in
+                        var uArray : [User] = []
+                        for child in snapshot.value as! [String:AnyObject]{
+                            let runs = child.value["runs"] as! Int
+                            let username = child.value["username"] as! String
+                            let u = User(runs: runs, username: username)
+                            
+                            uArray.append(u)
+                            
+                            
+                        }
+                        self.userArray = uArray
+                        self.updateLeaderboard()
+                    })
+                    
                     
                     
                 }) { (error) in
@@ -183,12 +207,12 @@ class GameViewController: ViewController {
 
         
 
-        
+    
 
-        
-        
-        
-        
+    
+    
+    
+    
         // Do any additional setup after loading the view.
         
         let outsTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.outsTapDetected)))
@@ -245,6 +269,24 @@ class GameViewController: ViewController {
         hideSecondQsForAiroutK()
         hideSecondQsForGroundout()
 
+    }
+    
+    func updateLeaderboard(){
+        
+        let rankings = Array(self.userArray.reversed())
+        var runString : [String] = ["","","","","",""]
+        var usernameString : [String] = ["n/a","n/a","n/a","n/a","n/a","n/a"]
+        var i : Int = 0
+        
+        for user in rankings {
+            let x : Int = user.runs!
+            runString[i] = String(x)
+            usernameString[i] = user.username!
+            i += 1
+        }
+        
+        self.leaderboard.text = "1. " + usernameString[0] + "  Runs: " + runString[0] + "    $10\n" + "2. " + usernameString[1] + "  Runs: " + runString[1] + "    $5\n" + "3. " + usernameString[2] + "  Runs: " + runString[2] + "    $0\n" + "4. " + usernameString[3] + "  Runs: " + runString[3] + "    $0\n" + "5. " + usernameString[4] + "  Runs: " + runString[4] + "    $0\n" + "6. " + usernameString[5] + "  Runs: " + runString[5] + "    $0\n"
+        
     }
     
     func last10TapDetected(){

@@ -13,8 +13,6 @@ class LeaderboardTableViewController: UITableViewController {
 
     var currentGame : String = ""
     
-    var scores : [Int] = []
-    var names : [String] = []
     
     var ref: FIRDatabaseReference!
     
