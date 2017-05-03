@@ -399,15 +399,23 @@
                                 <rect key="frame" x="5" y="340" width="242" height="97"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zwL-Kz-0bw">
+                                <rect key="frame" x="93" y="416" width="188" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                     <connections>
                         <outlet property="airoutKButton" destination="e0k-4v-dFB" id="rCz-Z7-NDK"/>
                         <outlet property="diamond" destination="U6N-m2-2zt" id="HWs-q3-b4A"/>
+                        <outlet property="gameStatus" destination="zwL-Kz-0bw" id="hy3-C4-DZi"/>
                         <outlet property="groundoutButton" destination="LP1-R2-ryk" id="xtl-Qe-ztI"/>
                         <outlet property="last10" destination="czl-BA-GCV" id="DsZ-Qq-67r"/>
                         <outlet property="leaderboard" destination="JoM-Tl-lDf" id="oc3-XT-AYI"/>
@@ -491,7 +499,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="hjT-p1-QHg" customClass="MenuNavigationController" customModule="playbyplay" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" translucent="NO" prompted="NO"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" translucent="NO" id="Rpu-Qg-cyV">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" barStyle="black" translucent="NO" id="Rpu-Qg-cyV">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>

@@ -25,6 +25,7 @@ class GameViewController: ViewController {
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var statsText: UITextView!
     
+    @IBOutlet weak var gameStatus: UILabel!
     
     var ref: FIRDatabaseReference!
     
@@ -39,6 +40,7 @@ class GameViewController: ViewController {
     var lastPlay : String = "init"
     
     var resultHistory = [String]()
+    
     
     var d0 = UIImage(named: "0.png")
     var allpups = UIImage(named: "allpups.png")
@@ -171,15 +173,23 @@ class GameViewController: ViewController {
                     
                     //picks must be in by this point
                     if(self.lastPlay == "closed"){
+                        self.gameStatus.text = "AB in Progress.."
+                        self.gameStatus.textColor = UIColor.white
                         self.closeBallot()
                     }
                     
-                    else if(self.lastPlay != prevPlay && prevPlay != "init"){
+                    else if(self.lastPlay != prevPlay){
+                        
                         self.gradePlay()
+                        
                         self.menuButton.isEnabled = true
                         self.lastPick = ""
+                        self.pickSubmitted = false
                         //let reversedResults = self.resultHistory.reversed()
                         self.last10.text = "Your last 10:\n"+self.resultHistory.joined(separator: "\n")
+                    }else if( self.lastPlay == "init" ){
+                        self.gameStatus.text = "Game has not started"
+                        self.gameStatus.textColor = UIColor.white
                     }
                     
                     
@@ -595,6 +605,9 @@ class GameViewController: ViewController {
         let allButtons: [UIButton] = [groundoutButton, airoutKButton, onBaseButton, leftSideButton,rightSideButton,airoutButton,kButton, singleButton,nonSingleButton,overLButton,underLButton,overRButton,underRButton, lfrfButton, cfButton, kSwingingButton, kLookingButton, groundSingleButton, airSingleButton, doubleButton,tripleHomerButton]
 
         if(self.lastPlay == "next"){
+            self.gameStatus.text = "Make your picks"
+            self.gameStatus.textColor = UIColor.red
+            
             for button in allButtons{
 
                 
@@ -605,6 +618,37 @@ class GameViewController: ViewController {
                 button.backgroundColor = UIColor.darkGray
                 button.isEnabled = true
                
+                
+                button.setTitleColor(UIColor.white, for: .disabled)
+                button.setTitleColor(UIColor.black, for: .selected)
+                button.setTitleColor(UIColor.black, for: .highlighted)
+                button.setTitleColor(UIColor.white, for: .normal)
+                
+                
+                
+                hideThirdQsForK()
+                hideThirdQsForAirout()
+                hideThirdQsForSingle()
+                hideThirdQsForLeftSide()
+                hideThirdQsForRightSide()
+                hideThirdQsForNonSingle()
+                hideSecondQsForOnBase()
+                hideSecondQsForAiroutK()
+                hideSecondQsForGroundout()
+                
+                
+            }
+        }else if(self.pickSubmitted == false){
+            for button in allButtons{
+                
+                
+                button.isHidden = false
+                
+                button.isSelected = false
+                button.isHighlighted = false
+                button.backgroundColor = UIColor.darkGray
+                button.isEnabled = true
+                
                 
                 button.setTitleColor(UIColor.white, for: .disabled)
                 button.setTitleColor(UIColor.black, for: .selected)
@@ -1179,6 +1223,8 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "double"
         pickSubmitted = true
+        self.gameStatus.text = "Submitted!"
+        self.gameStatus.textColor = UIColor.green
         self.menuButton.isEnabled = false
     }
     func tripleHomerSelected(_ sender: UIButton){
@@ -1187,6 +1233,8 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "triplehomer"
         pickSubmitted = true
+        self.gameStatus.text = "Submitted!"
+        self.gameStatus.textColor = UIColor.green
         self.menuButton.isEnabled = false
     }
     func airSingleSelected(_ sender: UIButton){
@@ -1195,6 +1243,8 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "airsingle"
         pickSubmitted = true
+        self.gameStatus.text = "Submitted!"
+        self.gameStatus.textColor = UIColor.green
         self.menuButton.isEnabled = false
     }
     func groundSingleSelected(_ sender: UIButton){
@@ -1203,6 +1253,8 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "groundsingle"
         pickSubmitted = true
+        self.gameStatus.text = "Submitted!"
+        self.gameStatus.textColor = UIColor.green
         self.menuButton.isEnabled = false
     }
     
@@ -1309,6 +1361,8 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "lfrf"
         pickSubmitted = true
+        self.gameStatus.text = "Submitted!"
+        self.gameStatus.textColor = UIColor.green
         self.menuButton.isEnabled = false
     }
     func cfSelected(_ sender: UIButton){
@@ -1317,6 +1371,8 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "cf"
         pickSubmitted = true
+        self.gameStatus.text = "Submitted!"
+        self.gameStatus.textColor = UIColor.green
         self.menuButton.isEnabled = false
     }
     func kSwingingSelected(_ sender: UIButton){
@@ -1325,6 +1381,8 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "kSwinging"
         pickSubmitted = true
+        self.gameStatus.text = "Submitted!"
+        self.gameStatus.textColor = UIColor.green
         self.menuButton.isEnabled = false
     }
     func kLookingSelected(_ sender: UIButton){
@@ -1333,6 +1391,8 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "kLooking"
         pickSubmitted = true
+        self.gameStatus.text = "Submitted!"
+        self.gameStatus.textColor = UIColor.green
         self.menuButton.isEnabled = false
     }
 
@@ -1445,6 +1505,8 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "underL"
         pickSubmitted = true
+        self.gameStatus.text = "Submitted!"
+        self.gameStatus.textColor = UIColor.green
         self.menuButton.isEnabled = false
     }
     func overLSelected(_ sender: UIButton){
@@ -1453,6 +1515,8 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "overL"
         pickSubmitted = true
+        self.gameStatus.text = "Submitted!"
+        self.gameStatus.textColor = UIColor.green
         self.menuButton.isEnabled = false
     }
     func underRSelected(_ sender: UIButton){
@@ -1461,6 +1525,8 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "underR"
         pickSubmitted = true
+        self.gameStatus.text = "Submitted!"
+        self.gameStatus.textColor = UIColor.green
         self.menuButton.isEnabled = false
     }
     func overRSelected(_ sender: UIButton){
@@ -1469,6 +1535,8 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "overR"
         pickSubmitted = true
+        self.gameStatus.text = "Submitted!"
+        self.gameStatus.textColor = UIColor.green
         self.menuButton.isEnabled = false
     }
     
