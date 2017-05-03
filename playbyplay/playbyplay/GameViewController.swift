@@ -112,6 +112,8 @@ class GameViewController: ViewController {
     
     let defaults = UserDefaults.standard
     
+    var runnersMoved = false
+    
     struct User { //starting with a structure to hold user data
         //var firebaseKey : String?
         var runs: Int?
@@ -120,12 +122,14 @@ class GameViewController: ViewController {
     
     var userArray = [User]()
     
+    var array : [NSDictionary] = []
+    
     //var newPlay : Bool = false
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.runnersMoved = false
         self.ref = FIRDatabase.database().reference()
         let user = FIRAuth.auth()?.currentUser
         
@@ -147,15 +151,18 @@ class GameViewController: ViewController {
                     self.lastPlay = gameDict?.value(forKey: "lastPlay") as! String
                     self.outs = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".outs") as! Int
                     self.runs = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".runs") as! Int
-                    self.diamondIndex = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".diamond") as! Int
                     
+                    if(self.runnersMoved == false){
+                        self.diamondIndex = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".diamond") as! Int
+                        self.diamondState = self.states[self.diamondIndex]
+                        self.diamond.image = self.stateArray[self.diamondIndex]
+                    }
                     
                     
                     
                     self.runsText.text = "Runs: " + String(self.runs)
                     self.outsText.text = "Outs: " + String(self.outs)
-                    self.diamondState = self.states[self.diamondIndex]
-                    self.diamond.image = self.stateArray[self.diamondIndex]
+                    
                     
                     self.updateStats()
                     
@@ -169,30 +176,48 @@ class GameViewController: ViewController {
                     
                     else if(self.lastPlay != prevPlay && prevPlay != "init"){
                         self.gradePlay()
+                        self.menuButton.isEnabled = true
                         self.lastPick = ""
                         //let reversedResults = self.resultHistory.reversed()
                         self.last10.text = "Your last 10:\n"+self.resultHistory.joined(separator: "\n")
                     }
                     
                     
-                    
-                    //for leaderboard
                     let query = self.ref.child("games").child(self.currentGame).child("leaderboard").queryOrdered(byChild: "runs")
                     
                     query.observe(.value, with: { (snapshot) in
-                        var uArray : [User] = []
-                        for child in snapshot.value as! [String:AnyObject]{
-                            let runs = child.value["runs"] as! Int
-                            let username = child.value["username"] as! String
-                            let u = User(runs: runs, username: username)
+                        
+                        let enumerator = snapshot.children
+                        self.array = []
+                        while let rest = enumerator.nextObject() as? FIRDataSnapshot{
                             
-                            uArray.append(u)
-                            
+                            self.array.append(rest.value as! NSDictionary)
                             
                         }
-                        self.userArray = uArray
                         self.updateLeaderboard()
                     })
+                    
+        
+
+                    
+                    
+//                    //for leaderboard
+//                    let query = self.ref.child("games").child(self.currentGame).child("leaderboard").queryOrdered(byChild: "runs")
+//                    
+//                    query.observe(.value, with: { (snapshot) in
+//                        var uArray : [User] = []
+//                        for child in snapshot.value as! [String:AnyObject]{
+//                            let runs = child.value["runs"] as! Int
+//                            let username = child.value["username"] as! String
+//                            let u = User(runs: runs, username: username)
+//                            
+//                            uArray.append(u)
+//                            
+//                            
+//                        }
+//                        self.userArray = uArray
+//                        self.updateLeaderboard()
+//                    })
                     
                     
                     
@@ -214,6 +239,8 @@ class GameViewController: ViewController {
     
     
         // Do any additional setup after loading the view.
+        
+        
         
         let outsTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.outsTapDetected)))
         let runsTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.runsTapDetected)))
@@ -273,19 +300,37 @@ class GameViewController: ViewController {
     
     func updateLeaderboard(){
         
-        let rankings = Array(self.userArray.reversed())
-        var runString : [String] = ["","","","","",""]
-        var usernameString : [String] = ["n/a","n/a","n/a","n/a","n/a","n/a"]
-        var i : Int = 0
+        var rankings = Array(self.array.reversed())
         
-        for user in rankings {
-            let x : Int = user.runs!
-            runString[i] = String(x)
-            usernameString[i] = user.username!
-            i += 1
+        if(rankings.count < 6){
+            var i = rankings.count
+            while( i < 6){
+                let blankUser : NSDictionary = ["username": "", "runs": 0]
+                rankings.append(blankUser)
+                i += 1
+            }
         }
         
-        self.leaderboard.text = "1. " + usernameString[0] + "  Runs: " + runString[0] + "    $10\n" + "2. " + usernameString[1] + "  Runs: " + runString[1] + "    $5\n" + "3. " + usernameString[2] + "  Runs: " + runString[2] + "    $0\n" + "4. " + usernameString[3] + "  Runs: " + runString[3] + "    $0\n" + "5. " + usernameString[4] + "  Runs: " + runString[4] + "    $0\n" + "6. " + usernameString[5] + "  Runs: " + runString[5] + "    $0\n"
+        let firstPlace = rankings[0]
+        let firstUsername = firstPlace.value(forKey: "username") as! String
+        let firstRuns = firstPlace.value(forKey: "runs") as! Int
+        let secondPlace = rankings[1]
+        let secondUsername = secondPlace.value(forKey: "username") as! String
+        let secondRuns = secondPlace.value(forKey: "runs") as! Int
+        let thirdPlace = rankings[2]
+        let thirdUsername = thirdPlace.value(forKey: "username") as! String
+        let thirdRuns = thirdPlace.value(forKey: "runs") as! Int
+        let fourthPlace = rankings[3]
+        let fourthUsername = fourthPlace.value(forKey: "username") as! String
+        let fourthRuns = fourthPlace.value(forKey: "runs") as! Int
+        let fifthPlace = rankings[4]
+        let fifthUsername = fifthPlace.value(forKey: "username") as! String
+        let fifthRuns = fifthPlace.value(forKey: "runs") as! Int
+        let sixthPlace = rankings[5]
+        let sixthUsername = sixthPlace.value(forKey: "username") as! String
+        let sixthRuns = sixthPlace.value(forKey: "runs") as! Int
+        
+        self.leaderboard.text = "1. " + firstUsername + "  Runs: " + String(firstRuns) + "    $10\n" + "2. " + secondUsername + "  Runs: " + String(secondRuns) + "    $5\n" + "3. " + thirdUsername + "  Runs: " + String(thirdRuns) + "    $0\n" + "4. " + fourthUsername + "  Runs: " + String(fourthRuns) + "    $0\n" + "5. " + fifthUsername + "  Runs: " + String(fifthRuns) + "    $0\n" + "6. " + sixthUsername + "  Runs: " + String(sixthRuns) + "    $0\n"
         
     }
     
@@ -373,16 +418,22 @@ class GameViewController: ViewController {
             self.hits += 1
             
             self.diamondState = [0,0,0]
-            diamond.startAnimating()
+            self.runnersMoved = true
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(0)
+            
+            self.diamond.startAnimating()
             self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
             
+            
+            
         }else if(outcome == "Out"){
-            diamond.animationImages = outDiamondArray;
+            self.diamond.animationImages = outDiamondArray;
             
             if(self.outs < 2){
                 self.outs += 1
             }else{
-                diamond.animationImages = endDiamondArray;
+                self.diamond.animationImages = endDiamondArray;
+                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(0)
                 self.outs = 0
             }
             self.outsText.text = "Outs: " + String(self.outs)
@@ -394,13 +445,13 @@ class GameViewController: ViewController {
             
             
             
-            diamond.startAnimating()
+            self.diamond.startAnimating()
             self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
             
         }else if(outcome == "Single"){
-            diamond.animationImages = singleDiamondArray;
+            self.diamond.animationImages = singleDiamondArray;
             
-            if(diamondState[2] == 1){
+            if(self.diamondState[2] == 1){
                 self.runs += 1
             }
             self.runsText.text = "Runs: " + String(self.runs)
@@ -413,28 +464,38 @@ class GameViewController: ViewController {
             self.atbats += 1
             self.hits += 1
             
-            if (diamondState == [0,0,0] || diamondState == [0,0,1]){
+            if (self.diamondState == [0,0,0] || self.diamondState == [0,0,1]){
                 self.diamondState = [1,0,0]
+                self.runnersMoved = true
+                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(1)
                 
-            }else if( diamondState == [1,0,0] || diamondState == [1,0,1]){
+            }else if( self.diamondState == [1,0,0] || self.diamondState == [1,0,1]){
                 self.diamondState = [1,1,0]
+                self.runnersMoved = true
+                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(2)
 
-            }else if( diamondState == [0,1,0] || diamondState == [0,1,1]){
+            }else if( self.diamondState == [0,1,0] || self.diamondState == [0,1,1]){
                 self.diamondState = [1,0,1]
+                self.runnersMoved = true
+                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(3)
                 
-            }else if( diamondState == [1,1,1] || diamondState == [1,1,0]){
-                self.diamondState = [1,0,0]
+            }else if( self.diamondState == [1,1,1] || self.diamondState == [1,1,0]){
+                self.diamondState = [1,1,1]
+                self.runnersMoved = true
+                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(4)
                 
             }
+            self.diamond.startAnimating()
+            self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
             
             
         }else if(outcome == "Double"){
-            diamond.animationImages = doubleDiamondArray;
+            self.diamond.animationImages = doubleDiamondArray;
             
-            if(diamondState[2] == 1){
+            if(self.diamondState[2] == 1){
                 self.runs += 1
             }
-            if(diamondState[1] == 1){
+            if(self.diamondState[1] == 1){
                 self.runs += 1
             }
             self.runsText.text = "Runs: " + String(self.runs)
@@ -447,58 +508,64 @@ class GameViewController: ViewController {
             self.atbats += 1
             self.hits += 1
             
-            if (diamondState == [0,0,0] || diamondState == [0,0,1] || diamondState == [0,1,1] || diamondState == [0,1,0]){
+            if (self.diamondState == [0,0,0] || self.diamondState == [0,0,1] || self.diamondState == [0,1,1] || self.diamondState == [0,1,0]){
                 self.diamondState = [0,1,0]
+                self.runnersMoved = true
+                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(5)
                 
-            }else if( diamondState == [1,0,0] || diamondState == [1,0,1] || diamondState == [1,1,0] || diamondState == [1,1,1]){
+            }else if( self.diamondState == [1,0,0] || self.diamondState == [1,0,1] || self.diamondState == [1,1,0] || self.diamondState == [1,1,1]){
                 self.diamondState = [0,1,1]
+                self.runnersMoved = true
+                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(6)
             }
+            
+            self.diamond.startAnimating()
+            self.runnersMoved = true
+            self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
         }
 
         updateStats()
         
-        diamond.startAnimating()
-        self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
+        
         
     }
     
     func updateDiamond(){
         
-        diamond.stopAnimating()
-        
+        self.diamond.stopAnimating()
         
         
         if(self.diamondState == [0,0,0]){
-            diamond.image = stateArray[0]
+            self.diamond.image = stateArray[0]
             if(self.currentGame != ""){
                 self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(0)
             }
         }else if(self.diamondState == [1,0,0]){
-            diamond.image = stateArray[1]
+            self.diamond.image = stateArray[1]
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(1)
             
         }else if(self.diamondState == [1,1,0]){
-            diamond.image = stateArray[2]
+            self.diamond.image = stateArray[2]
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(2)
             
         }else if(self.diamondState == [1,0,1]){
-            diamond.image = stateArray[3]
+            self.diamond.image = stateArray[3]
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(3)
             
         }else if(self.diamondState == [1,1,1]){
-            diamond.image = stateArray[4]
+            self.diamond.image = stateArray[4]
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(4)
             
         }else if(self.diamondState == [0,1,0]){
-            diamond.image = stateArray[5]
+            self.diamond.image = stateArray[5]
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(5)
             
         }else if(self.diamondState == [0,1,1]){
-            diamond.image = stateArray[6]
+            self.diamond.image = stateArray[6]
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(6)
             
         }else if(self.diamondState == [0,0,1]){
-            diamond.image = stateArray[7]
+            self.diamond.image = stateArray[7]
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(7)
         }
         
@@ -575,7 +642,7 @@ class GameViewController: ViewController {
             
             diamondChange(outcome: "Home Run")
             
-        }else if(lastPick == "none yet" || last10.text == "Your last 10:"){
+        }else if(lastPick == "none yet" || last10.text == "Your last 10:" || lastPick == ""){
             
         }
             
@@ -723,16 +790,13 @@ class GameViewController: ViewController {
         else if(groundoutLOutcomes.contains(lastPick) && (groundoutLOutcomes.contains(self.lastPlay) || groundoutROutcomes.contains(self.lastPlay))){
             for button in allButtons{
                 if(!button.isHidden){
-                    if(self.lastPlay != "underL"){
+                    if((self.lastPlay != "underL" || self.lastPlay != "overL")){
                         groundoutButton.backgroundColor = UIColor.green
                         leftSideButton.backgroundColor = UIColor.red
                         underLButton.backgroundColor = UIColor.red
-                    }
-                    else if(self.lastPlay != "overL"){
-                        groundoutButton.backgroundColor = UIColor.green
-                        leftSideButton.backgroundColor = UIColor.red
                         overLButton.backgroundColor = UIColor.red
                     }
+                    
                 }
             }
             self.resultHistory.append("Single")
@@ -746,16 +810,13 @@ class GameViewController: ViewController {
         else if(groundoutROutcomes.contains(lastPick) && (groundoutROutcomes.contains(self.lastPlay) || groundoutLOutcomes.contains(self.lastPlay))){
             for button in allButtons{
                 if(!button.isHidden){
-                    if(self.lastPlay != "underR"){
+                    if((self.lastPlay != "underR" || self.lastPlay != "overR")){
                         groundoutButton.backgroundColor = UIColor.green
                         rightSideButton.backgroundColor = UIColor.red
                         underRButton.backgroundColor = UIColor.red
-                    }
-                    else if(self.lastPlay != "overR"){
-                        groundoutButton.backgroundColor = UIColor.green
-                        rightSideButton.backgroundColor = UIColor.red
                         overRButton.backgroundColor = UIColor.red
                     }
+                    
                 }
             }
             self.resultHistory.append("Single")
@@ -770,16 +831,13 @@ class GameViewController: ViewController {
         else if(airoutKAiroutOutcomes.contains(lastPick) && (airoutKAiroutOutcomes.contains(self.lastPlay) || airoutKKOutcomes.contains(self.lastPlay))){
             for button in allButtons{
                 if(!button.isHidden){
-                    if(self.lastPlay != "lfrf"){
+                    if((self.lastPlay != "lfrf" || self.lastPlay != "cf")){
                         airoutKButton.backgroundColor = UIColor.green
                         airoutButton.backgroundColor = UIColor.red
                         lfrfButton.backgroundColor = UIColor.red
-                    }
-                    else if(self.lastPlay != "cf"){
-                        airoutKButton.backgroundColor = UIColor.green
-                        airoutButton.backgroundColor = UIColor.red
                         cfButton.backgroundColor = UIColor.red
                     }
+                    
                 }
             }
             self.resultHistory.append("Single")
@@ -793,16 +851,13 @@ class GameViewController: ViewController {
         else if(airoutKKOutcomes.contains(lastPick) && (airoutKKOutcomes.contains(self.lastPlay) || airoutKAiroutOutcomes.contains(self.lastPlay))){
             for button in allButtons{
                 if(!button.isHidden){
-                    if(self.lastPlay != "kSwinging"){
+                    if((self.lastPlay != "kSwinging" || self.lastPlay != "kLooking")){
                         airoutKButton.backgroundColor = UIColor.green
                         kButton.backgroundColor = UIColor.red
                         kSwingingButton.backgroundColor = UIColor.red
-                    }
-                    else if(self.lastPlay != "kLooking"){
-                        airoutKButton.backgroundColor = UIColor.green
-                        kButton.backgroundColor = UIColor.red
                         kLookingButton.backgroundColor = UIColor.red
                     }
+                    
                 }
             }
             self.resultHistory.append("Single")
@@ -816,16 +871,13 @@ class GameViewController: ViewController {
         else if(onBaseSingleOutcomes.contains(lastPick) && (onBaseSingleOutcomes.contains(self.lastPlay) || onBaseNonSingleOutcomes.contains(self.lastPlay))){
             for button in allButtons{
                 if(!button.isHidden){
-                    if(self.lastPlay != "airsingle"){
+                    if((self.lastPlay != "airsingle" || self.lastPlay != "groundsingle")){
                         onBaseButton.backgroundColor = UIColor.green
                         singleButton.backgroundColor = UIColor.red
                         airSingleButton.backgroundColor = UIColor.red
-                    }
-                    else if(self.lastPlay != "groundsingle"){
-                        onBaseButton.backgroundColor = UIColor.green
-                        singleButton.backgroundColor = UIColor.red
                         groundSingleButton.backgroundColor = UIColor.red
                     }
+                    
                 }
             }
             self.resultHistory.append("Single")
@@ -839,16 +891,13 @@ class GameViewController: ViewController {
         else if(onBaseNonSingleOutcomes.contains(lastPick) && (onBaseNonSingleOutcomes.contains(self.lastPlay) || onBaseSingleOutcomes.contains(self.lastPlay))){
             for button in allButtons{
                 if(!button.isHidden){
-                    if(self.lastPlay != "double"){
+                    if((self.lastPlay != "double" || self.lastPlay != "triplehomer")){
                         onBaseButton.backgroundColor = UIColor.green
                         nonSingleButton.backgroundColor = UIColor.red
                         doubleButton.backgroundColor = UIColor.red
-                    }
-                    else if(self.lastPlay != "triplehomer"){
-                        onBaseButton.backgroundColor = UIColor.green
-                        nonSingleButton.backgroundColor = UIColor.red
                         tripleHomerButton.backgroundColor = UIColor.red
                     }
+                    
                 }
             }
             self.resultHistory.append("Single")
@@ -1130,6 +1179,7 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "double"
         pickSubmitted = true
+        self.menuButton.isEnabled = false
     }
     func tripleHomerSelected(_ sender: UIButton){
         //SUBMIT PICKS
@@ -1137,6 +1187,7 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "triplehomer"
         pickSubmitted = true
+        self.menuButton.isEnabled = false
     }
     func airSingleSelected(_ sender: UIButton){
         //SUBMIT PICKS
@@ -1144,6 +1195,7 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "airsingle"
         pickSubmitted = true
+        self.menuButton.isEnabled = false
     }
     func groundSingleSelected(_ sender: UIButton){
         //SUBMIT PICKS
@@ -1151,6 +1203,7 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "groundsingle"
         pickSubmitted = true
+        self.menuButton.isEnabled = false
     }
     
     // Airout/K ************************************************************
@@ -1256,6 +1309,7 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "lfrf"
         pickSubmitted = true
+        self.menuButton.isEnabled = false
     }
     func cfSelected(_ sender: UIButton){
         //SUBMIT PICKS
@@ -1263,6 +1317,7 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "cf"
         pickSubmitted = true
+        self.menuButton.isEnabled = false
     }
     func kSwingingSelected(_ sender: UIButton){
         //SUBMIT PICKS
@@ -1270,6 +1325,7 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "kSwinging"
         pickSubmitted = true
+        self.menuButton.isEnabled = false
     }
     func kLookingSelected(_ sender: UIButton){
         //SUBMIT PICKS
@@ -1277,6 +1333,7 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "kLooking"
         pickSubmitted = true
+        self.menuButton.isEnabled = false
     }
 
     
@@ -1388,6 +1445,7 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "underL"
         pickSubmitted = true
+        self.menuButton.isEnabled = false
     }
     func overLSelected(_ sender: UIButton){
         //SUBMIT PICKS
@@ -1395,6 +1453,7 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "overL"
         pickSubmitted = true
+        self.menuButton.isEnabled = false
     }
     func underRSelected(_ sender: UIButton){
         //SUBMIT PICKS
@@ -1402,6 +1461,7 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "underR"
         pickSubmitted = true
+        self.menuButton.isEnabled = false
     }
     func overRSelected(_ sender: UIButton){
         //SUBMIT PICKS
@@ -1409,6 +1469,7 @@ class GameViewController: ViewController {
         hideNonSelected()
         lastPick = "overR"
         pickSubmitted = true
+        self.menuButton.isEnabled = false
     }
     
     

@@ -18,14 +18,8 @@ class LeaderboardTableViewController: UITableViewController {
     
     let user = FIRAuth.auth()?.currentUser
     
-    struct User { //starting with a structure to hold user data
-        //var firebaseKey : String?
-        var runs: Int?
-        var username: String?
-    }
-
-    var userArray = [User]()
     
+    var array : [NSDictionary] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,16 +34,16 @@ class LeaderboardTableViewController: UITableViewController {
 
         let query = self.ref.child("games").child(self.currentGame).child("leaderboard").queryOrdered(byChild: "runs")
             
-            query.observe(.value, with: { (snapshot) in
-                for child in snapshot.value as! [String:AnyObject]{
-                    let runs = child.value["runs"] as! Int
-                    let username = child.value["username"] as! String
-                    let u = User(runs: runs, username: username)
+            query.observeSingleEvent(of: .value, with: { (snapshot) in
+                
+                let enumerator = snapshot.children
+                self.array = []
+                while let rest = enumerator.nextObject() as? FIRDataSnapshot{
                     
-                    self.userArray.append(u)
+                    self.array.append(rest.value as! NSDictionary)
                     
-                    print("\n\n\n\n\n\n\n\n\n\n\nchild:\n",self.userArray)
                 }
+                
                 self.tableView.reloadData()
             })
             
@@ -81,7 +75,7 @@ class LeaderboardTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         
-        return self.userArray.count + 20
+        return self.array.count + 20
     }
 
     
@@ -91,21 +85,21 @@ class LeaderboardTableViewController: UITableViewController {
         cell.textLabel?.textColor = UIColor.white
         cell.backgroundColor = UIColor.black
         
-        let rankings = Array(self.userArray.reversed())
+        let rankings = Array(self.array.reversed())
         
         if(indexPath.row < rankings.count){
-            let x : Int = rankings[indexPath.row].runs!
-        
+            let x : Int = rankings[indexPath.row].value(forKey: "runs") as! Int
+            
             let runString = String(x)
         
         
         
             if(indexPath.row == 0){
-                cell.textLabel?.text = rankings[indexPath.row].username! + "        Runs: " + runString + "         $10"
+                cell.textLabel?.text = rankings[indexPath.row].value(forKey:"username") as! String + "        Runs: " + runString + "         $10"
             }else if(indexPath.row == 1){
-                cell.textLabel?.text = rankings[indexPath.row].username! + "        Runs: " + runString + "         $5"
-            }else if(indexPath.row < self.userArray.count){
-                cell.textLabel?.text = rankings[indexPath.row].username! + "        Runs: " + runString + "         $0"
+                cell.textLabel?.text = rankings[indexPath.row].value(forKey:"username") as! String + "        Runs: " + runString + "         $5"
+            }else if(indexPath.row < rankings.count){
+                cell.textLabel?.text = rankings[indexPath.row].value(forKey:"username") as! String + "        Runs: " + runString + "         $0"
             }
         }
         

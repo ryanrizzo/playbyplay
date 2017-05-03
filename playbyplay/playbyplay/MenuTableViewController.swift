@@ -110,7 +110,7 @@ class MenuTableViewController: UITableViewController {
             } catch let error as NSError {
                 print(error.localizedDescription)
             }
-        } else if(indexPath.row == 1){
+        } else if(indexPath.row == 1 && self.inGame == "true"){
             self.performSegue(withIdentifier: "segueToLeaderboard", sender: self)
         } else if(indexPath.row == 2){
             self.performSegue(withIdentifier: "segueToProfile", sender: self)

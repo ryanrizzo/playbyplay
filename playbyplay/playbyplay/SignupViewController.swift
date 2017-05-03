@@ -42,6 +42,7 @@ class SignupViewController: ViewController {
                     self.ref.child("users").child((user?.uid)!).child("atbats").setValue(0)
                     self.ref.child("users").child((user?.uid)!).child("doubles").setValue(0)
                     self.ref.child("users").child((user?.uid)!).child("homers").setValue(0)
+                    self.ref.child("users").child((user?.uid)!).child("money").setValue(0)
 
                     self.defaults.set("", forKey: "1")
                     self.defaults.set(self.defaults.value(forKey: "1") , forKey: "10")
@@ -61,7 +62,7 @@ class SignupViewController: ViewController {
                     self.present(MNC, animated: true, completion: nil)
                     
                 } else {
-                    let invalidAlert = UIAlertController(title: "Invalid Entry", message: "Sign Up Failed. Check if you entered a valid email, otherwise you may have taken a username that already exists.", preferredStyle: UIAlertControllerStyle.alert)
+                    let invalidAlert = UIAlertController(title: "Invalid Entry", message: "Sign Up Failed. Check if you entered a valid email, otherwise you may have taken a username that already exists, or chosen a bad password.", preferredStyle: UIAlertControllerStyle.alert)
                     invalidAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
                     self.present(invalidAlert, animated: true, completion: nil)
                 }
