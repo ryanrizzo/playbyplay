@@ -312,9 +312,9 @@ class GameViewController: ViewController {
         
         var rankings = Array(self.array.reversed())
         
-        if(rankings.count < 6){
+        if(rankings.count < 10){
             var i = rankings.count
-            while( i < 6){
+            while( i < 10){
                 let blankUser : NSDictionary = ["username": "", "runs": 0]
                 rankings.append(blankUser)
                 i += 1
@@ -339,8 +339,20 @@ class GameViewController: ViewController {
         let sixthPlace = rankings[5]
         let sixthUsername = sixthPlace.value(forKey: "username") as! String
         let sixthRuns = sixthPlace.value(forKey: "runs") as! Int
+        let seventhPlace = rankings[6]
+        let seventhUsername = seventhPlace.value(forKey: "username") as! String
+        let seventhRuns = seventhPlace.value(forKey: "runs") as! Int
+        let eighthPlace = rankings[7]
+        let eighthUsername = eighthPlace.value(forKey: "username") as! String
+        let eighthRuns = eighthPlace.value(forKey: "runs") as! Int
+        let ninthPlace = rankings[8]
+        let ninthUsername = ninthPlace.value(forKey: "username") as! String
+        let ninthRuns = ninthPlace.value(forKey: "runs") as! Int
+        let tenthPlace = rankings[9]
+        let tenthUsername = tenthPlace.value(forKey: "username") as! String
+        let tenthRuns = tenthPlace.value(forKey: "runs") as! Int
         
-        self.leaderboard.text = "1. " + firstUsername + "  Runs: " + String(firstRuns) + "    $10\n" + "2. " + secondUsername + "  Runs: " + String(secondRuns) + "    $5\n" + "3. " + thirdUsername + "  Runs: " + String(thirdRuns) + "    $0\n" + "4. " + fourthUsername + "  Runs: " + String(fourthRuns) + "    $0\n" + "5. " + fifthUsername + "  Runs: " + String(fifthRuns) + "    $0\n" + "6. " + sixthUsername + "  Runs: " + String(sixthRuns) + "    $0\n"
+        self.leaderboard.text = "1. " + firstUsername + "  Runs: " + String(firstRuns) + "    $10\n" + "2. " + secondUsername + "  Runs: " + String(secondRuns) + "    $5\n" + "3. " + thirdUsername + "  Runs: " + String(thirdRuns) + "    $0\n" + "4. " + fourthUsername + "  Runs: " + String(fourthRuns) + "    $0\n" + "5. " + fifthUsername + "  Runs: " + String(fifthRuns) + "    $0\n" + "6. " + sixthUsername + "  Runs: " + String(sixthRuns) + "    $0\n" + "7. " + seventhUsername + "  Runs: " + String(seventhRuns) + "    $0\n" + "8. " + eighthUsername + "  Runs: " + String(eighthRuns) + "    $0\n" + "9. " + ninthUsername + "  Runs: " + String(ninthRuns) + "    $0\n" + "10. " + tenthUsername + "  Runs: " + String(tenthRuns) + "    $0\n"
         
     }
     
@@ -682,6 +694,9 @@ class GameViewController: ViewController {
             self.resultHistory.append("Home Run")
             updateDefaults(outcome: "Home Run")
             
+            self.gameStatus.text = "You hit a Home Run!"
+            self.gameStatus.textColor = UIColor.green
+            
             self.playCount += 1
             
             diamondChange(outcome: "Home Run")
@@ -709,6 +724,9 @@ class GameViewController: ViewController {
             self.resultHistory.append("Double")
             updateDefaults(outcome: "Double")
             
+            self.gameStatus.text = "You hit a Double!"
+            self.gameStatus.textColor = UIColor.green
+            
             self.playCount += 1
             
             diamondChange(outcome: "Double")
@@ -731,6 +749,10 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Double")
             updateDefaults(outcome: "Double")
+            
+            self.gameStatus.text = "You hit a Double!"
+            self.gameStatus.textColor = UIColor.green
+            
             self.playCount += 1
             
             diamondChange(outcome: "Double")
@@ -753,6 +775,9 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Double")
             updateDefaults(outcome: "Double")
+            
+            self.gameStatus.text = "You hit a Double!"
+            self.gameStatus.textColor = UIColor.green
             
             self.playCount += 1
             
@@ -777,6 +802,9 @@ class GameViewController: ViewController {
             self.resultHistory.append("Double")
             updateDefaults(outcome: "Double")
             
+            self.gameStatus.text = "You hit a Double!"
+            self.gameStatus.textColor = UIColor.green
+            
             self.playCount += 1
             
             diamondChange(outcome: "Double")
@@ -799,6 +827,9 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Double")
             updateDefaults(outcome: "Double")
+            
+            self.gameStatus.text = "You hit a Double!"
+            self.gameStatus.textColor = UIColor.green
             
             self.playCount += 1
             
@@ -823,6 +854,9 @@ class GameViewController: ViewController {
             self.resultHistory.append("Double")
             updateDefaults(outcome: "Double")
             
+            self.gameStatus.text = "You hit a Double!"
+            self.gameStatus.textColor = UIColor.green
+            
             self.playCount += 1
             
             diamondChange(outcome: "Double")
@@ -846,6 +880,9 @@ class GameViewController: ViewController {
             self.resultHistory.append("Single")
             updateDefaults(outcome: "Single")
             
+            self.gameStatus.text = "You hit a Single!"
+            self.gameStatus.textColor = UIColor.green
+            
             self.playCount += 1
             
             diamondChange(outcome: "Single")
@@ -866,6 +903,8 @@ class GameViewController: ViewController {
             self.resultHistory.append("Single")
             updateDefaults(outcome: "Single")
             
+            self.gameStatus.text = "You hit a Single!"
+            self.gameStatus.textColor = UIColor.green
             
             self.playCount += 1
             
@@ -887,6 +926,10 @@ class GameViewController: ViewController {
             self.resultHistory.append("Single")
             updateDefaults(outcome: "Single")
             
+            self.gameStatus.text = "You hit a Single!"
+            self.gameStatus.textColor = UIColor.green
+            
+            
             self.playCount += 1
             
             diamondChange(outcome: "Single")
@@ -906,6 +949,9 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Single")
             updateDefaults(outcome: "Single")
+            
+            self.gameStatus.text = "You hit a Single!"
+            self.gameStatus.textColor = UIColor.green
             
             self.playCount += 1
             
@@ -927,6 +973,9 @@ class GameViewController: ViewController {
             self.resultHistory.append("Single")
             updateDefaults(outcome: "Single")
             
+            self.gameStatus.text = "You hit a Single!"
+            self.gameStatus.textColor = UIColor.green
+            
             self.playCount += 1
             
             diamondChange(outcome: "Single")
@@ -947,6 +996,9 @@ class GameViewController: ViewController {
             self.resultHistory.append("Single")
             updateDefaults(outcome: "Single")
             
+            self.gameStatus.text = "You hit a Single!"
+            self.gameStatus.textColor = UIColor.green
+            
             self.playCount += 1
             
             diamondChange(outcome: "Single")
@@ -961,6 +1013,9 @@ class GameViewController: ViewController {
             }
             self.resultHistory.append("Out")
             updateDefaults(outcome: "Out")
+            
+            self.gameStatus.text = "You got out!"
+            self.gameStatus.textColor = UIColor.red
             
             self.playCount += 1
             
