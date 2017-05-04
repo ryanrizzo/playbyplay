@@ -617,8 +617,8 @@ class GameViewController: ViewController {
         let allButtons: [UIButton] = [groundoutButton, airoutKButton, onBaseButton, leftSideButton,rightSideButton,airoutButton,kButton, singleButton,nonSingleButton,overLButton,underLButton,overRButton,underRButton, lfrfButton, cfButton, kSwingingButton, kLookingButton, groundSingleButton, airSingleButton, doubleButton,tripleHomerButton]
 
         if(self.lastPlay == "next"){
-            self.gameStatus.text = "Make your picks"
-            self.gameStatus.textColor = UIColor.red
+            self.gameStatus.text = "MAKE YOUR PICKS!"
+            self.gameStatus.textColor = UIColor.orange
             
             for button in allButtons{
 
