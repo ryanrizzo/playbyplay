@@ -31,9 +31,9 @@ class ProfileTableViewController: UITableViewController {
     
     //let indexArray : [String] = ["username", "atbats", "hits", "doubles", "homers", "avg", "slg", "winnings"]
     
-    let labelArray : [String] = ["", "AB", "H", "2B", "HR", "AVG", "SLG", "$"]
+    let labelArray : [String] = ["", "AB", "H", "2B", "HR", "AVG", "SLG", "$", "All Time Hi-Score"]
 
-    var currUser : [String] = ["","","","","","","",""]
+    var currUser : [String] = ["","","","","","","","", ""]
     
     
     override func viewDidLoad() {
@@ -78,7 +78,8 @@ class ProfileTableViewController: UITableViewController {
             let money = currUserDict?.value(forKey: "money") as! Int
             self.currUser[7] = String(money)
             
-            
+            let hiscore = currUserDict?.value(forKey: "hiscore") as! Int
+            self.currUser[8] = String(hiscore)
             
             self.tableView.reloadData()
             

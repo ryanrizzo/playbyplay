@@ -14,6 +14,9 @@ class GameViewController: ViewController {
     @IBOutlet weak var last10: UITextView!
     @IBOutlet weak var diamond: UIImageView!
     @IBOutlet weak var powerups: UIImageView!
+    
+    @IBOutlet weak var inningsText: UITextView!
+    @IBOutlet weak var hiscoreText: UITextView!
 
     @IBOutlet weak var groundoutButton: UIButton!
     @IBOutlet weak var airoutKButton: UIButton!
@@ -103,11 +106,15 @@ class GameViewController: ViewController {
     
     var outs : Int = 0
     var runs : Int = 0
+    var inning : Int = 1
+    var hiscore : Int = 0
     
     var atbats : Int = 0
     var hits : Int = 0
     var doubles : Int = 0
     var homers : Int = 0
+    
+    var allTimeHi : Int = 0
     
     var avg : Double = 0
     var slg : Double = 0
@@ -144,6 +151,7 @@ class GameViewController: ViewController {
                 self.hits = currUserDict?.value(forKey: "hits") as! Int
                 self.doubles = currUserDict?.value(forKey: "doubles") as! Int
                 self.homers = currUserDict?.value(forKey: "homers") as! Int
+                self.allTimeHi = currUserDict?.value(forKey: "hiscore") as! Int
                 
                 //listen for new plays
                 self.ref.child("games").child(self.currentGame).observe(.value, with: { (snapshot) in
@@ -153,6 +161,9 @@ class GameViewController: ViewController {
                     self.lastPlay = gameDict?.value(forKey: "lastPlay") as! String
                     self.outs = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".outs") as! Int
                     self.runs = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".runs") as! Int
+                    self.hiscore = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".hiscore") as! Int
+                    self.lastPick = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".lastPick") as! String
+                    self.inning = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".inning") as! Int
                     
                     if(self.runnersMoved == false){
                         self.diamondIndex = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".diamond") as! Int
@@ -164,7 +175,13 @@ class GameViewController: ViewController {
                     
                     self.runsText.text = "Runs: " + String(self.runs)
                     self.outsText.text = "Outs: " + String(self.outs)
+                    self.inningsText.text = "Inn: " + String(self.inning)
                     
+                    
+                    if(self.runs > self.hiscore){
+                        self.hiscore = self.runs
+                    }
+                    self.hiscoreText.text = "Hi-Score: " + String(self.hiscore)
                     
                     self.updateStats()
                     
@@ -184,6 +201,7 @@ class GameViewController: ViewController {
                         
                         self.menuButton.isEnabled = true
                         self.lastPick = ""
+                        self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(self.lastPick)
                         self.pickSubmitted = false
                         //let reversedResults = self.resultHistory.reversed()
                         self.last10.text = "Your last 10:\n"+self.resultHistory.joined(separator: "\n")
@@ -193,7 +211,7 @@ class GameViewController: ViewController {
                     }
                     
                     
-                    let query = self.ref.child("games").child(self.currentGame).child("leaderboard").queryOrdered(byChild: "runs")
+                    let query = self.ref.child("games").child(self.currentGame).child("leaderboard").queryOrdered(byChild: "hiscore")
                     
                     query.observe(.value, with: { (snapshot) in
                         
@@ -257,17 +275,23 @@ class GameViewController: ViewController {
         let diamondTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.diamondTapDetected)))
         let pupTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.pupTapDetected)))
         let last10Tap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.last10TapDetected)))
+        let inningsTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.inningsTapDetected)))
+        let hiTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.hiTapDetected)))
         
+        hiTap.numberOfTapsRequired = 1
         last10Tap.numberOfTapsRequired = 1
         pupTap.numberOfTapsRequired = 1
         runsTap.numberOfTapsRequired = 1
         outsTap.numberOfTapsRequired = 1
         diamondTap.numberOfTapsRequired = 1
+        inningsTap.numberOfTapsRequired = 1
+        hiscoreText.addGestureRecognizer(hiTap)
         last10.addGestureRecognizer(last10Tap)
         powerups.addGestureRecognizer(pupTap)
         diamond.addGestureRecognizer(diamondTap)
         runsText.addGestureRecognizer(runsTap)
         outsText.addGestureRecognizer(outsTap)
+        inningsText.addGestureRecognizer(inningsTap)
         
         
         self.resultHistory = [defaults.value(forKey: "1") as! String, defaults.value(forKey: "2") as! String,defaults.value(forKey: "3") as! String,defaults.value(forKey: "4") as! String,defaults.value(forKey:"5") as! String,defaults.value(forKey: "6") as! String,defaults.value(forKey: "7") as! String,defaults.value(forKey: "8") as! String,defaults.value(forKey: "9") as! String,defaults.value(forKey: "10") as! String,]
@@ -315,44 +339,54 @@ class GameViewController: ViewController {
         if(rankings.count < 10){
             var i = rankings.count
             while( i < 10){
-                let blankUser : NSDictionary = ["username": "", "runs": 0]
+                let blankUser : NSDictionary = ["username": "", "hiscore": 0]
                 rankings.append(blankUser)
                 i += 1
             }
         }
+        var i = 0
+        while( i < rankings.count){
+            if(rankings[i].value(forKey: "username") == nil){
+                rankings[i] = ["username": "", "hiscore": 0]
+            }
+            
+            i += 1
+        }
+
+        
         
         let firstPlace = rankings[0]
         let firstUsername = firstPlace.value(forKey: "username") as! String
-        let firstRuns = firstPlace.value(forKey: "runs") as! Int
+        let firstRuns = firstPlace.value(forKey: "hiscore") as! Int
         let secondPlace = rankings[1]
         let secondUsername = secondPlace.value(forKey: "username") as! String
-        let secondRuns = secondPlace.value(forKey: "runs") as! Int
+        let secondRuns = secondPlace.value(forKey: "hiscore") as! Int
         let thirdPlace = rankings[2]
         let thirdUsername = thirdPlace.value(forKey: "username") as! String
-        let thirdRuns = thirdPlace.value(forKey: "runs") as! Int
+        let thirdRuns = thirdPlace.value(forKey: "hiscore") as! Int
         let fourthPlace = rankings[3]
         let fourthUsername = fourthPlace.value(forKey: "username") as! String
-        let fourthRuns = fourthPlace.value(forKey: "runs") as! Int
+        let fourthRuns = fourthPlace.value(forKey: "hiscore") as! Int
         let fifthPlace = rankings[4]
         let fifthUsername = fifthPlace.value(forKey: "username") as! String
-        let fifthRuns = fifthPlace.value(forKey: "runs") as! Int
+        let fifthRuns = fifthPlace.value(forKey: "hiscore") as! Int
         let sixthPlace = rankings[5]
         let sixthUsername = sixthPlace.value(forKey: "username") as! String
-        let sixthRuns = sixthPlace.value(forKey: "runs") as! Int
+        let sixthRuns = sixthPlace.value(forKey: "hiscore") as! Int
         let seventhPlace = rankings[6]
         let seventhUsername = seventhPlace.value(forKey: "username") as! String
-        let seventhRuns = seventhPlace.value(forKey: "runs") as! Int
+        let seventhRuns = seventhPlace.value(forKey: "hiscore") as! Int
         let eighthPlace = rankings[7]
         let eighthUsername = eighthPlace.value(forKey: "username") as! String
-        let eighthRuns = eighthPlace.value(forKey: "runs") as! Int
+        let eighthRuns = eighthPlace.value(forKey: "hiscore") as! Int
         let ninthPlace = rankings[8]
         let ninthUsername = ninthPlace.value(forKey: "username") as! String
-        let ninthRuns = ninthPlace.value(forKey: "runs") as! Int
+        let ninthRuns = ninthPlace.value(forKey: "hiscore") as! Int
         let tenthPlace = rankings[9]
         let tenthUsername = tenthPlace.value(forKey: "username") as! String
-        let tenthRuns = tenthPlace.value(forKey: "runs") as! Int
+        let tenthRuns = tenthPlace.value(forKey: "hiscore") as! Int
         
-        self.leaderboard.text = "1. " + firstUsername + "  Runs: " + String(firstRuns) + "    $10\n" + "2. " + secondUsername + "  Runs: " + String(secondRuns) + "    $5\n" + "3. " + thirdUsername + "  Runs: " + String(thirdRuns) + "    $0\n" + "4. " + fourthUsername + "  Runs: " + String(fourthRuns) + "    $0\n" + "5. " + fifthUsername + "  Runs: " + String(fifthRuns) + "    $0\n" + "6. " + sixthUsername + "  Runs: " + String(sixthRuns) + "    $0\n" + "7. " + seventhUsername + "  Runs: " + String(seventhRuns) + "    $0\n" + "8. " + eighthUsername + "  Runs: " + String(eighthRuns) + "    $0\n" + "9. " + ninthUsername + "  Runs: " + String(ninthRuns) + "    $0\n" + "10. " + tenthUsername + "  Runs: " + String(tenthRuns) + "    $0\n"
+        self.leaderboard.text = "1. " + firstUsername + "  Runs: " + String(firstRuns) + "  $10\n" + "2. " + secondUsername + "  Runs: " + String(secondRuns) + "    $5\n" + "3. " + thirdUsername + "  Runs: " + String(thirdRuns) + "    $0\n" + "4. " + fourthUsername + "  Runs: " + String(fourthRuns) + "    $0\n" + "5. " + fifthUsername + "  Runs: " + String(fifthRuns) + "    $0\n" + "6. " + sixthUsername + "  Runs: " + String(sixthRuns) + "    $0\n" + "7. " + seventhUsername + "  Runs: " + String(seventhRuns) + "    $0\n" + "8. " + eighthUsername + "  Runs: " + String(eighthRuns) + "    $0\n" + "9. " + ninthUsername + "  Runs: " + String(ninthRuns) + "    $0\n" + "10. " + tenthUsername + "  Runs: " + String(tenthRuns) + "    $0\n"
         
     }
     
@@ -396,20 +430,39 @@ class GameViewController: ViewController {
         diamondAlert.addAction(okAction)
         self.present(diamondAlert, animated:true)
     }
-    
+    func inningsTapDetected() {
+        print("inning Clicked")
+        let inningsAlert = UIAlertController(title: "Innings", message: "You get 9 innings to post as high a score as possible.  Your highest 9-inning score is posted to the leaderboard, and if you score enough runs, you can win a cash prize!", preferredStyle: .alert)
+        let okAction = UIAlertAction(
+        title: "OK", style: UIAlertActionStyle.default) { (action) in
+            
+        }
+        inningsAlert.addAction(okAction)
+        self.present(inningsAlert, animated:true)
+    }
+    func hiTapDetected() {
+        print("Hi-Score Clicked")
+        let hiAlert = UIAlertController(title: "Innings", message: "This is your Hi-Score from the current game.  This is the score that will appear on the leaderboard under your username.  Your goal is to get as high a score as possible before you get 27 outs (9 innings).  You win money the higher your score is.", preferredStyle: .alert)
+        let okAction = UIAlertAction(
+        title: "OK", style: UIAlertActionStyle.default) { (action) in
+            
+        }
+        hiAlert.addAction(okAction)
+        self.present(hiAlert, animated:true)
+    }
     
     func updateStats(){
         print("self.atbats: ",self.atbats)
-        if(self.hits > 0){
+        if(self.atbats > 0){
             self.avg = Double(self.hits)/Double(self.atbats)
             self.slg = ( Double(self.hits-self.doubles-self.homers) + Double(2*self.doubles) + Double(4*self.homers) )/Double(self.atbats)
             
             self.avg = (self.avg * 1000).rounded() / 1000
             self.slg = (self.slg * 1000).rounded() / 1000
             
-            self.statsText.text = "Career Stats:\nAVG: "+String(self.avg)+"\nSLG: "+String(self.slg)
+            self.statsText.text = "Career Stats\nAVG: "+String(self.avg)+"\nSLG: "+String(self.slg)
         }else{
-            self.statsText.text = "Career Stats:\nAVG:\nSLG:"
+            self.statsText.text = "Career Stats\nAVG:\nSLG:"
         }
     }
     
@@ -420,6 +473,9 @@ class GameViewController: ViewController {
         
         for button in allButtons{
             button.isEnabled = false
+            if (pickSubmitted == false){
+                button.isHidden = true
+            }
         }
         
         
@@ -430,7 +486,11 @@ class GameViewController: ViewController {
             diamond.animationImages = homerDiamondArray;
             runs += 1 + self.diamondState.reduce(0,+)
             self.runsText.text = "Runs: " + String(self.runs)
-            
+            if(self.runs > self.hiscore){
+                self.hiscore = self.runs
+                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("hiscore").setValue(self.hiscore)
+                self.hiscoreText.text = "Hi-Score: " + String(self.hiscore)
+            }
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("runs").setValue(self.runs)
             self.ref.child("users").child((user?.uid)!).child("homers").setValue(self.homers+1)
             self.ref.child("users").child((user?.uid)!).child("hits").setValue(self.hits+1)
@@ -455,11 +515,26 @@ class GameViewController: ViewController {
                 self.outs += 1
             }else{
                 self.diamond.animationImages = endDiamondArray;
+                self.diamondState = [0,0,0]
+                self.runnersMoved = true
                 self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(0)
                 self.outs = 0
+                self.inning = self.inning + 1
+                if(self.inning > 9){
+                    self.runs = 0
+                    self.inning = 1
+                    self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("runs").setValue(self.runs)
+                    self.gameStatus.text = "Game Over!"
+                    if(self.hiscore > self.allTimeHi){
+                        self.allTimeHi = self.hiscore
+                        self.ref.child("users").child((user?.uid)!).child("hiscore").setValue(self.allTimeHi)
+                    }
+                }
             }
             self.outsText.text = "Outs: " + String(self.outs)
+            self.inningsText.text = "Inn: " + String(self.inning)
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("outs").setValue(self.outs)
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("inning").setValue(self.inning)
             
             self.atbats += 1
             self.ref.child("users").child((user?.uid)!).child("atbats").setValue(self.atbats)
@@ -477,7 +552,11 @@ class GameViewController: ViewController {
                 self.runs += 1
             }
             self.runsText.text = "Runs: " + String(self.runs)
-            
+            if(self.runs > self.hiscore){
+                self.hiscore = self.runs
+                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("hiscore").setValue(self.hiscore)
+                self.hiscoreText.text = "Hi-Score: " + String(self.hiscore)
+            }
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("runs").setValue(self.runs)
 
             self.ref.child("users").child((user?.uid)!).child("hits").setValue(self.hits+1)
@@ -521,7 +600,11 @@ class GameViewController: ViewController {
                 self.runs += 1
             }
             self.runsText.text = "Runs: " + String(self.runs)
-            
+            if(self.runs > self.hiscore){
+                self.hiscore = self.runs
+                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("hiscore").setValue(self.hiscore)
+                self.hiscoreText.text = "Hi-Score: " + String(self.hiscore)
+            }
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("runs").setValue(self.runs)
             self.ref.child("users").child((user?.uid)!).child("doubles").setValue(self.doubles+1)
             self.ref.child("users").child((user?.uid)!).child("hits").setValue(self.hits+1)
@@ -1277,6 +1360,7 @@ class GameViewController: ViewController {
         updateButtons(mainButton: doubleButton, otherButton: tripleHomerButton)
         hideNonSelected()
         lastPick = "double"
+        self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(lastPick)
         pickSubmitted = true
         self.gameStatus.text = "Submitted!"
         self.gameStatus.textColor = UIColor.green
@@ -1287,6 +1371,7 @@ class GameViewController: ViewController {
         updateButtons(mainButton: tripleHomerButton, otherButton: doubleButton)
         hideNonSelected()
         lastPick = "triplehomer"
+        self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(lastPick)
         pickSubmitted = true
         self.gameStatus.text = "Submitted!"
         self.gameStatus.textColor = UIColor.green
@@ -1297,6 +1382,7 @@ class GameViewController: ViewController {
         updateButtons(mainButton: airSingleButton, otherButton: groundSingleButton)
         hideNonSelected()
         lastPick = "airsingle"
+        self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(lastPick)
         pickSubmitted = true
         self.gameStatus.text = "Submitted!"
         self.gameStatus.textColor = UIColor.green
@@ -1307,6 +1393,7 @@ class GameViewController: ViewController {
         updateButtons(mainButton: groundSingleButton, otherButton: airSingleButton)
         hideNonSelected()
         lastPick = "groundsingle"
+        self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(lastPick)
         pickSubmitted = true
         self.gameStatus.text = "Submitted!"
         self.gameStatus.textColor = UIColor.green
@@ -1415,6 +1502,7 @@ class GameViewController: ViewController {
         updateButtons(mainButton: lfrfButton, otherButton: cfButton)
         hideNonSelected()
         lastPick = "lfrf"
+        self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(lastPick)
         pickSubmitted = true
         self.gameStatus.text = "Submitted!"
         self.gameStatus.textColor = UIColor.green
@@ -1425,6 +1513,7 @@ class GameViewController: ViewController {
         updateButtons(mainButton: cfButton, otherButton: lfrfButton)
         hideNonSelected()
         lastPick = "cf"
+        self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(lastPick)
         pickSubmitted = true
         self.gameStatus.text = "Submitted!"
         self.gameStatus.textColor = UIColor.green
@@ -1435,6 +1524,7 @@ class GameViewController: ViewController {
         updateButtons(mainButton: kSwingingButton, otherButton: kLookingButton)
         hideNonSelected()
         lastPick = "kSwinging"
+        self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(lastPick)
         pickSubmitted = true
         self.gameStatus.text = "Submitted!"
         self.gameStatus.textColor = UIColor.green
@@ -1445,6 +1535,7 @@ class GameViewController: ViewController {
         updateButtons(mainButton: kLookingButton, otherButton: kSwingingButton)
         hideNonSelected()
         lastPick = "kLooking"
+        self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(lastPick)
         pickSubmitted = true
         self.gameStatus.text = "Submitted!"
         self.gameStatus.textColor = UIColor.green
@@ -1559,6 +1650,7 @@ class GameViewController: ViewController {
         updateButtons(mainButton: underLButton, otherButton: overLButton)
         hideNonSelected()
         lastPick = "underL"
+        self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(lastPick)
         pickSubmitted = true
         self.gameStatus.text = "Submitted!"
         self.gameStatus.textColor = UIColor.green
@@ -1569,6 +1661,7 @@ class GameViewController: ViewController {
         updateButtons(mainButton: overLButton, otherButton: underLButton)
         hideNonSelected()
         lastPick = "overL"
+        self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(lastPick)
         pickSubmitted = true
         self.gameStatus.text = "Submitted!"
         self.gameStatus.textColor = UIColor.green
@@ -1579,6 +1672,7 @@ class GameViewController: ViewController {
         updateButtons(mainButton: underRButton, otherButton: overRButton)
         hideNonSelected()
         lastPick = "underR"
+        self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(lastPick)
         pickSubmitted = true
         self.gameStatus.text = "Submitted!"
         self.gameStatus.textColor = UIColor.green
@@ -1589,6 +1683,7 @@ class GameViewController: ViewController {
         updateButtons(mainButton: overRButton, otherButton: underRButton)
         hideNonSelected()
         lastPick = "overR"
+        self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(lastPick)
         pickSubmitted = true
         self.gameStatus.text = "Submitted!"
         self.gameStatus.textColor = UIColor.green

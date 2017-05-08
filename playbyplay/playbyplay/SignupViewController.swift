@@ -43,6 +43,7 @@ class SignupViewController: ViewController {
                     self.ref.child("users").child((user?.uid)!).child("doubles").setValue(0)
                     self.ref.child("users").child((user?.uid)!).child("homers").setValue(0)
                     self.ref.child("users").child((user?.uid)!).child("money").setValue(0)
+                    self.ref.child("users").child((user?.uid)!).child("hiscore").setValue(0)
 
                     self.defaults.set("", forKey: "1")
                     self.defaults.set(self.defaults.value(forKey: "1") , forKey: "10")

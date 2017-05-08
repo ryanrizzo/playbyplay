@@ -102,6 +102,11 @@ class GamesTableViewController: UITableViewController {
             
             self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("diamond").setValue(0)
             
+            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("lastPick").setValue("")
+            
+            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("inning").setValue(1)
+            
+            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("hiscore").setValue(0)
             
             self.ref.child("users").child((user?.uid)!).observeSingleEvent(of: .value, with: {(snapshot) in
                 
