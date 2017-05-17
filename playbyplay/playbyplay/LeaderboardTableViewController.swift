@@ -36,7 +36,7 @@ class LeaderboardTableViewController: UITableViewController {
             
             self.currentGame = currUserDict?.value(forKey: "currentGame") as! String
 
-        let query = self.ref.child("games").child(self.currentGame).child("leaderboard").queryOrdered(byChild: "runs")
+        let query = self.ref.child("games").child(self.currentGame).child("leaderboard").queryOrdered(byChild: "hiscore")
             
             query.observeSingleEvent(of: .value, with: { (snapshot) in
                 
@@ -94,6 +94,9 @@ class LeaderboardTableViewController: UITableViewController {
         if(indexPath.row < rankings.count){
             let runs : Int = rankings[indexPath.row].value(forKey: "runs") as! Int
             let inn = rankings[indexPath.row].value(forKey: "inning") as! Int
+            let hi = rankings[indexPath.row].value(forKey: "hiscore") as! Int
+            
+            let rank = indexPath.row + 1
             
             if (rankings[indexPath.row].value(forKey:"pup") as! Int == 1){
                 cell.usernameLabel.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
@@ -102,6 +105,8 @@ class LeaderboardTableViewController: UITableViewController {
                 cell.moneyLabel.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
                 cell.innSignifier.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
                 cell.rSignifier.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+                cell.hiSignifier.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+                cell.hiLabel.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
             }else if (rankings[indexPath.row].value(forKey:"pup") as! Int == 2){
                 cell.usernameLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
                 cell.runsLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
@@ -109,6 +114,8 @@ class LeaderboardTableViewController: UITableViewController {
                 cell.moneyLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
                 cell.innSignifier.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
                 cell.rSignifier.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+                cell.hiSignifier.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+                cell.hiLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
             }else if (rankings[indexPath.row].value(forKey:"pup") as! Int == 3){
                 cell.usernameLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
                 cell.runsLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
@@ -116,13 +123,28 @@ class LeaderboardTableViewController: UITableViewController {
                 cell.moneyLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
                 cell.innSignifier.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
                 cell.rSignifier.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+                cell.hiSignifier.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+                cell.hiLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+            }else{
+                cell.usernameLabel.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+                cell.runsLabel.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+                cell.inningLabel.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+                cell.moneyLabel.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+                cell.innSignifier.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+                cell.rSignifier.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+                cell.hiLabel.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+                cell.hiSignifier.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
             }
             
-            cell.usernameLabel.text = rankings[indexPath.row].value(forKey:"username") as? String
+            let rankString = String(rank) + ". "
+            
+            cell.usernameLabel.text = rankString + (rankings[indexPath.row].value(forKey:"username") as? String)!
             
             cell.runsLabel.text = String(runs)
             
             cell.inningLabel.text = String(inn)
+            
+            cell.hiLabel.text = String(hi)
         
             let state = rankings[indexPath.row].value(forKey: "diamond") as! Int
             

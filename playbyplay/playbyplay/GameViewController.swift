@@ -244,7 +244,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
                     
                     self.runsText.text = "Runs: " + String(self.runs)
                     self.outsText.text = "Outs: " + String(self.outs)
-                    self.inningsText.text = "Inn: " + String(self.inning)
+                    self.inningsText.text = "Inning: " + String(self.inning)
                     
                     
                     if(self.runs > self.hiscore){
@@ -423,6 +423,8 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
             cell.moneyLabel.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
             cell.innSignifier.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
             cell.rSignifier.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+            cell.hiSignifier.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+            cell.hiLabel.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
         }else if (rankings[indexPath.row].value(forKey:"pup") as! Int == 2){
             cell.usernameLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
             cell.runsLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
@@ -430,6 +432,8 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
             cell.moneyLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
             cell.innSignifier.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
             cell.rSignifier.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+            cell.hiSignifier.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+            cell.hiLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
         }else if (rankings[indexPath.row].value(forKey:"pup") as! Int == 3){
             cell.usernameLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
             cell.runsLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
@@ -437,6 +441,8 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
             cell.moneyLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
             cell.innSignifier.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
             cell.rSignifier.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+            cell.hiSignifier.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+            cell.hiLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
         }else{
             cell.usernameLabel.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
             cell.runsLabel.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
@@ -444,11 +450,14 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
             cell.moneyLabel.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
             cell.innSignifier.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
             cell.rSignifier.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+            cell.hiLabel.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+            cell.hiSignifier.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
         }
         
         if(indexPath.row < rankings.count){
             let runs : Int = rankings[indexPath.row].value(forKey: "runs") as! Int
             let inn = rankings[indexPath.row].value(forKey: "inning") as! Int
+            let hi = rankings[indexPath.row].value(forKey: "hiscore") as! Int
             
             let rank = indexPath.row + 1
             
@@ -457,6 +466,8 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
             cell.runsLabel.text = String(runs)
             
             cell.inningLabel.text = String(inn)
+            
+            cell.hiLabel.text = String(hi)
             
             let state = rankings[indexPath.row].value(forKey: "diamond") as! Int
             
@@ -543,7 +554,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
     }
     
     func pupTapDetected() {
-        let pupAlert = UIAlertController(title: "Power Innings", message: "There are 3 Power Inning types:\n\nSpeed Demon: Your runners advance an extra base on a hit\n\nAll Triples: Any hit (except for a home run) counts as a triple in the game (but not for your Career Stats) \n\nDouble Points: All runs count as 2 runs\n\nPower Innings are randomly awarded, and they last until you guess 3 at bats wrong.", preferredStyle: .alert)
+        let pupAlert = UIAlertController(title: "Power Innings", message: "There are 3 Power Inning types:\n\nSpeed Demon: Your runners advance an extra base on a hit\n\nAll Triples: Any hit (except for a home run) counts as a triple in the game (but not for your Career Stats) \n\nDouble Points: All runs count as 2 runs\n\nPower Innings are randomly awarded, and they last until your inning ends.  You have a 1/3 chance of getting a Power Inning for any given inning.", preferredStyle: .alert)
         let okAction = UIAlertAction(
         title: "OK", style: UIAlertActionStyle.default) { (action) in
             
@@ -685,7 +696,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
                 }
             }
             self.outsText.text = "Outs: " + String(self.outs)
-            self.inningsText.text = "Inn: " + String(self.inning)
+            self.inningsText.text = "Inning: " + String(self.inning)
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("outs").setValue(self.outs)
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("inning").setValue(self.inning)
             

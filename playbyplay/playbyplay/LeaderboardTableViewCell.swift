@@ -16,6 +16,8 @@ class LeaderboardTableViewCell: UITableViewCell {
     @IBOutlet weak var inningLabel: UILabel!
     @IBOutlet weak var innSignifier: UILabel!
     @IBOutlet weak var rSignifier: UILabel!
+    @IBOutlet weak var hiSignifier: UILabel!
+    @IBOutlet weak var hiLabel: UILabel!
     
 
     override func awakeFromNib() {

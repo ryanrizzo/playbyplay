@@ -101,16 +101,30 @@ class MenuTableViewController: UITableViewController {
             }
             
         } else if(indexPath.row == 3){
-            let user = FIRAuth.auth()
-            do{
-                try user?.signOut()
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let FVC = storyboard.instantiateViewController(withIdentifier: "FVC")
-                self.present(FVC, animated: true, completion: nil)
-            } catch let error as NSError {
-                print(error.localizedDescription)
+            
+            let logoutAlert = UIAlertController(title: "Are you sure you want to log out?", message: "You will be taken back to the Log In/Sign Up page.", preferredStyle: .alert)
+            let cancelAction = UIAlertAction(
+            title: "Cancel", style: UIAlertActionStyle.default) { (action) in
+                
             }
-        } else if(indexPath.row == 1 && self.inGame == "true"){
+            let logoutAction = UIAlertAction(
+            title: "Log Out", style: UIAlertActionStyle.default) { (action) in
+                let user = FIRAuth.auth()
+                do{
+                    try user?.signOut()
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    let FVC = storyboard.instantiateViewController(withIdentifier: "FVC")
+                    self.present(FVC, animated: true, completion: nil)
+                } catch let error as NSError {
+                    print(error.localizedDescription)
+                }
+
+            }
+            logoutAlert.addAction(cancelAction)
+            logoutAlert.addAction(logoutAction)
+            self.present(logoutAlert, animated:true)
+            
+                    } else if(indexPath.row == 1 && self.inGame == "true"){
             self.performSegue(withIdentifier: "segueToLeaderboard", sender: self)
         } else if(indexPath.row == 2){
             self.performSegue(withIdentifier: "segueToProfile", sender: self)
