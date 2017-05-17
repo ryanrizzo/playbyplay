@@ -14,6 +14,8 @@ class GamesTableViewController: UITableViewController {
     var ref: FIRDatabaseReference!
     var games : [String] = []
     var gameID : String = ""
+    
+    let rand = Int(arc4random_uniform(9))
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,7 +73,12 @@ class GamesTableViewController: UITableViewController {
         
                 // Configure the cell...
         if(indexPath.row < self.games.count){
-            cell.textLabel?.text = self.games[indexPath.row] + " (9 Inning Contest)"
+            let str = self.games[indexPath.row]
+            let index = str.index(str.startIndex, offsetBy: 3)
+            let awayTeam = str.substring(to: index)
+            
+            let homeTeam = str.substring(from: index)
+            cell.textLabel?.text = awayTeam + " @ " + homeTeam
         }
         
         cell.backgroundColor = UIColor.black
@@ -107,6 +114,8 @@ class GamesTableViewController: UITableViewController {
             self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("inning").setValue(1)
             
             self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("hiscore").setValue(0)
+            
+            self.ref.child("games").child(self.games[indexPath.row]).child("leaderboard").child((user?.uid)!).child("pup").setValue(self.rand)
             
             self.ref.child("users").child((user?.uid)!).observeSingleEvent(of: .value, with: {(snapshot) in
                 

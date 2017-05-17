@@ -21,9 +21,13 @@ class LeaderboardTableViewController: UITableViewController {
     
     var array : [NSDictionary] = []
     
+    var stateArray: [UIImage] = [ UIImage(named: "0.png")!, UIImage(named: "1.png")!, UIImage(named: "1+2.png")!,UIImage(named: "13.png")!, UIImage(named: "loaded.png")!, UIImage(named: "2.png")!, UIImage(named: "23.png")!,UIImage(named: "3.png")!,]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         //set currentGame
+        
+        self.tableView.backgroundColor = UIColor.darkGray
         
         self.ref = FIRDatabase.database().reference()
         
@@ -75,12 +79,12 @@ class LeaderboardTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         
-        return self.array.count + 20
+        return self.array.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "LabelCell", for: indexPath) as! LeaderboardTableViewCell
         
         cell.textLabel?.textColor = UIColor.white
         cell.backgroundColor = UIColor.black
@@ -88,18 +92,48 @@ class LeaderboardTableViewController: UITableViewController {
         let rankings = Array(self.array.reversed())
         
         if(indexPath.row < rankings.count){
-            let x : Int = rankings[indexPath.row].value(forKey: "runs") as! Int
+            let runs : Int = rankings[indexPath.row].value(forKey: "runs") as! Int
+            let inn = rankings[indexPath.row].value(forKey: "inning") as! Int
             
-            let runString = String(x)
+            if (rankings[indexPath.row].value(forKey:"pup") as! Int == 1){
+                cell.usernameLabel.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+                cell.runsLabel.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+                cell.inningLabel.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+                cell.moneyLabel.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+                cell.innSignifier.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+                cell.rSignifier.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+            }else if (rankings[indexPath.row].value(forKey:"pup") as! Int == 2){
+                cell.usernameLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+                cell.runsLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+                cell.inningLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+                cell.moneyLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+                cell.innSignifier.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+                cell.rSignifier.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+            }else if (rankings[indexPath.row].value(forKey:"pup") as! Int == 3){
+                cell.usernameLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+                cell.runsLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+                cell.inningLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+                cell.moneyLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+                cell.innSignifier.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+                cell.rSignifier.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+            }
+            
+            cell.usernameLabel.text = rankings[indexPath.row].value(forKey:"username") as? String
+            
+            cell.runsLabel.text = String(runs)
+            
+            cell.inningLabel.text = String(inn)
         
-        
-        
+            let state = rankings[indexPath.row].value(forKey: "diamond") as! Int
+            
+            cell.diamond.image = stateArray[state]
+            
             if(indexPath.row == 0){
-                cell.textLabel?.text = rankings[indexPath.row].value(forKey:"username") as! String + "        Runs: " + runString + "         $10"
+                 cell.moneyLabel.text = "$10"
             }else if(indexPath.row == 1){
-                cell.textLabel?.text = rankings[indexPath.row].value(forKey:"username") as! String + "        Runs: " + runString + "         $5"
+                cell.moneyLabel.text = "$5"
             }else if(indexPath.row < rankings.count){
-                cell.textLabel?.text = rankings[indexPath.row].value(forKey:"username") as! String + "        Runs: " + runString + "         $0"
+                cell.moneyLabel.text = "$0"
             }
         }
         

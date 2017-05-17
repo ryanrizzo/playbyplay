@@ -51,6 +51,8 @@
 		15A19D911E64C5CC00839B51 /* MenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A19D901E64C5CC00839B51 /* MenuNavigationController.swift */; };
 		15A19D951E6505BD00839B51 /* GamesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A19D941E6505BD00839B51 /* GamesTableViewController.swift */; };
 		15A19D981E651AFB00839B51 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 15A19D961E651AFB00839B51 /* Main.storyboard */; };
+		15F7DE861ECC1F3C0035CDC6 /* LeaderboardTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F7DE851ECC1F3C0035CDC6 /* LeaderboardTableViewCell.swift */; };
+		15F7DE881ECC294F0035CDC6 /* LeaderboardTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15F7DE871ECC294F0035CDC6 /* LeaderboardTableView.swift */; };
 		7DAF27810C70786E318B5225 /* Pods_playbyplay.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 78364F1C4F1104429A7009D1 /* Pods_playbyplay.framework */; };
 		C9C15943A8250CE235AE5F9D /* Pods_playbyplayUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48E88EA5B57B725A58E0E95B /* Pods_playbyplayUITests.framework */; };
 		CBC99C281DED339DB1FF38C6 /* Pods_playbyplayTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46BADAEB5557CDB5E8AC6CC7 /* Pods_playbyplayTests.framework */; };
@@ -125,6 +127,8 @@
 		15A19D901E64C5CC00839B51 /* MenuNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuNavigationController.swift; sourceTree = "<group>"; };
 		15A19D941E6505BD00839B51 /* GamesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GamesTableViewController.swift; sourceTree = "<group>"; };
 		15A19D971E651AFB00839B51 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		15F7DE851ECC1F3C0035CDC6 /* LeaderboardTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeaderboardTableViewCell.swift; sourceTree = "<group>"; };
+		15F7DE871ECC294F0035CDC6 /* LeaderboardTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeaderboardTableView.swift; sourceTree = "<group>"; };
 		3FAE985DD58695F15CAE929B /* Pods-playbyplay.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-playbyplay.release.xcconfig"; path = "Pods/Target Support Files/Pods-playbyplay/Pods-playbyplay.release.xcconfig"; sourceTree = "<group>"; };
 		46BADAEB5557CDB5E8AC6CC7 /* Pods_playbyplayTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_playbyplayTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		48E88EA5B57B725A58E0E95B /* Pods_playbyplayUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_playbyplayUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -217,6 +221,8 @@
 				1541A3551E5BED4E00060466 /* AppDelegate.swift */,
 				1541A3571E5BED4E00060466 /* ViewController.swift */,
 				15A19D961E651AFB00839B51 /* Main.storyboard */,
+				15F7DE871ECC294F0035CDC6 /* LeaderboardTableView.swift */,
+				15F7DE851ECC1F3C0035CDC6 /* LeaderboardTableViewCell.swift */,
 				151C36641EB185AF001F9384 /* LeaderboardTableViewController.swift */,
 				1561B4361EB8E3F800B29385 /* ProfileTableViewController.swift */,
 				15A19D941E6505BD00839B51 /* GamesTableViewController.swift */,
@@ -612,8 +618,10 @@
 				1541A3861E5BF8E400060466 /* GameViewController.swift in Sources */,
 				15A19D951E6505BD00839B51 /* GamesTableViewController.swift in Sources */,
 				1541A3841E5BF89F00060466 /* FirstViewController.swift in Sources */,
+				15F7DE881ECC294F0035CDC6 /* LeaderboardTableView.swift in Sources */,
 				1541A3581E5BED4E00060466 /* ViewController.swift in Sources */,
 				15A19D891E61342E00839B51 /* LoginViewController.swift in Sources */,
+				15F7DE861ECC1F3C0035CDC6 /* LeaderboardTableViewCell.swift in Sources */,
 				1561B4371EB8E3F800B29385 /* ProfileTableViewController.swift in Sources */,
 				1541A3561E5BED4E00060466 /* AppDelegate.swift in Sources */,
 			);

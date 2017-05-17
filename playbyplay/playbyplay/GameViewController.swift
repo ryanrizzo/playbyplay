@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 
-class GameViewController: ViewController {
+class GameViewController: ViewController, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var leaderboard: UITextView!
     @IBOutlet weak var last10: UITextView!
     @IBOutlet weak var diamond: UIImageView!
@@ -22,12 +22,15 @@ class GameViewController: ViewController {
     @IBOutlet weak var airoutKButton: UIButton!
     @IBOutlet weak var onBaseButton: UIButton!
     
+    @IBOutlet weak var leaderboardTV: UITableView!
+    
     @IBOutlet weak var outsText: UITextView!
     @IBOutlet weak var runsText: UITextView!
     
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var statsText: UITextView!
     
+    @IBOutlet weak var rulingStatus: UILabel!
     @IBOutlet weak var gameStatus: UILabel!
     
     var ref: FIRDatabaseReference!
@@ -46,7 +49,7 @@ class GameViewController: ViewController {
     
     
     var d0 = UIImage(named: "0.png")
-    var allpups = UIImage(named: "allpups.png")
+    var pupArray : [UIImage] = [ UIImage(named: "nopups.png")!, UIImage(named: "1pups.png")!, UIImage(named: "2pups.png")!, UIImage(named: "3pups.png")!, UIImage(named: "nopups.png")!, UIImage(named: "nopups.png")!, UIImage(named: "nopups.png")!, UIImage(named: "nopups.png")!, UIImage(named: "nopups.png")!,]
     var loadDiamondArray: [UIImage] = [ UIImage(named: "1.png")!, UIImage(named: "2.png")!,UIImage(named: "3.png")!, UIImage(named: "4.png")!,]
     
     var loadPupArray: [UIImage] = [ UIImage(named: "nopups.png")!, UIImage(named: "1pups.png")!,UIImage(named: "12pups.png")!, UIImage(named: "allpups.png")!,]
@@ -56,6 +59,8 @@ class GameViewController: ViewController {
     var singleDiamondArray: [UIImage] = [ UIImage(named: "hit1.png")!, UIImage(named: "hit2.png")!,UIImage(named: "hit1st.png")!,]
     
     var doubleDiamondArray: [UIImage] = [ UIImage(named: "hit1.png")!, UIImage(named: "hit2.png")!,UIImage(named: "hit1st.png")!, UIImage(named: "hit12.png")!,UIImage(named: "hit2nd.png")!,]
+    
+    var tripleDiamondArray: [UIImage] = [ UIImage(named: "hit1.png")!, UIImage(named: "hit2.png")!,UIImage(named: "hit1st.png")!, UIImage(named: "hit12.png")!,UIImage(named: "hit2nd.png")!, UIImage(named: "hit23.png")!,UIImage(named: "hit3rd.png")!,]
     
     var outDiamondArray: [UIImage] = [ UIImage(named: "out.png")!,]
     
@@ -123,6 +128,12 @@ class GameViewController: ViewController {
     
     var runnersMoved = false
     
+    var currPup : Int?
+    
+    //var pupArray = ["speeddemon", "triples", "doublepoints"]
+    
+    
+    
     struct User { //starting with a structure to hold user data
         //var firebaseKey : String?
         var runs: Int?
@@ -138,6 +149,10 @@ class GameViewController: ViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.leaderboardTV.backgroundColor = UIColor.darkGray
+        self.leaderboardTV.rowHeight = 34
+        
         self.runnersMoved = false
         self.ref = FIRDatabase.database().reference()
         let user = FIRAuth.auth()?.currentUser
@@ -164,6 +179,60 @@ class GameViewController: ViewController {
                     self.hiscore = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".hiscore") as! Int
                     self.lastPick = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".lastPick") as! String
                     self.inning = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".inning") as! Int
+                    self.currPup = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".pup") as? Int
+                    
+                    var lpText : String?
+                    if(self.lastPlay == "underL"){
+                        lpText = "Groundout L Under"
+                    }else if(self.lastPlay == "overL"){
+                        lpText = "Groundout L Over"
+                    }else if(self.lastPlay == "underR"){
+                        lpText = "Groundout R Under"
+                    }else if(self.lastPlay == "overR"){
+                        lpText = "Groundout R Over"
+                    }else if(self.lastPlay == "lfrf"){
+                        lpText = "Air Out LF/RF"
+                    }else if(self.lastPlay == "cf"){
+                        lpText = "Air Out CF/Other"
+                    }else if(self.lastPlay == "kSwinging"){
+                        lpText = "K Swinging"
+                    }else if(self.lastPlay == "kLooking"){
+                        lpText = "K Looking"
+                    }else if(self.lastPlay == "groundsingle"){
+                        lpText = "Ground Single"
+                    }else if(self.lastPlay == "airsingle"){
+                        lpText = "Air Single"
+                    }else if(self.lastPlay == "double"){
+                        lpText = "Double"
+                    }else if(self.lastPlay == "triplehomer"){
+                        lpText = "HR/3B/BB"
+                    }else{
+                        lpText = ""
+                    }
+                    
+                    self.powerups.image = self.pupArray[self.currPup!];
+                    if(self.currPup == 1){
+                        self.inningsText.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+                        self.outsText.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+                        self.runsText.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+                        self.hiscoreText.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+                    }else if(self.currPup == 2){
+                        self.inningsText.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+                        self.outsText.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+                        self.runsText.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+                        self.hiscoreText.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+                    }else if(self.currPup == 3){
+                        self.inningsText.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+                        self.outsText.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+                        self.runsText.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+                        self.hiscoreText.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+                    }else{
+                        self.inningsText.textColor = UIColor.yellow
+                        self.outsText.textColor = UIColor.yellow
+                        self.runsText.textColor = UIColor.yellow
+                        self.hiscoreText.textColor = UIColor.yellow
+                    }
+                   
                     
                     if(self.runnersMoved == false){
                         self.diamondIndex = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".diamond") as! Int
@@ -197,8 +266,11 @@ class GameViewController: ViewController {
                     
                     else if(self.lastPlay != prevPlay){
                         
-                        self.gradePlay()
                         
+                        self.gradePlay()
+                        if(self.lastPlay != "next"){
+                            self.rulingStatus.text = "Last Play: " + lpText!
+                        }
                         self.menuButton.isEnabled = true
                         self.lastPick = ""
                         self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(self.lastPick)
@@ -223,6 +295,7 @@ class GameViewController: ViewController {
                             
                         }
                         self.updateLeaderboard()
+                        self.leaderboardTV.reloadData()
                     })
                     
         
@@ -308,7 +381,8 @@ class GameViewController: ViewController {
         //powerups.animationImages = loadPupArray
         //powerups.animationDuration = 0.65
         //powerups.animationRepeatCount = 1
-        powerups.image = allpups;
+        
+        
         
         showThirdQsForK()
         showThirdQsForAirout()
@@ -329,7 +403,81 @@ class GameViewController: ViewController {
         hideSecondQsForOnBase()
         hideSecondQsForAiroutK()
         hideSecondQsForGroundout()
+        
+        hideNonSelected()
 
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "LCell", for: indexPath) as! LeaderboardTableViewCell
+        
+        cell.textLabel?.textColor = UIColor.white
+        cell.backgroundColor = UIColor.black
+        
+        let rankings = Array(self.array.reversed())
+        
+        if (rankings[indexPath.row].value(forKey:"pup") as! Int == 1){
+            cell.usernameLabel.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+            cell.runsLabel.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+            cell.inningLabel.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+            cell.moneyLabel.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+            cell.innSignifier.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+            cell.rSignifier.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
+        }else if (rankings[indexPath.row].value(forKey:"pup") as! Int == 2){
+            cell.usernameLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+            cell.runsLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+            cell.inningLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+            cell.moneyLabel.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+            cell.innSignifier.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+            cell.rSignifier.textColor = UIColor.init(red: 0.322, green: 0.788, blue: 1, alpha: 1)
+        }else if (rankings[indexPath.row].value(forKey:"pup") as! Int == 3){
+            cell.usernameLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+            cell.runsLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+            cell.inningLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+            cell.moneyLabel.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+            cell.innSignifier.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+            cell.rSignifier.textColor = UIColor.init(red: 0.133, green: 1, blue: 0.67, alpha: 1)
+        }else{
+            cell.usernameLabel.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+            cell.runsLabel.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+            cell.inningLabel.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+            cell.moneyLabel.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+            cell.innSignifier.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+            cell.rSignifier.textColor = UIColor.init(red: 1, green: 1, blue: 1, alpha: 1)
+        }
+        
+        if(indexPath.row < rankings.count){
+            let runs : Int = rankings[indexPath.row].value(forKey: "runs") as! Int
+            let inn = rankings[indexPath.row].value(forKey: "inning") as! Int
+            
+            let rank = indexPath.row + 1
+            
+            cell.usernameLabel.text = String(rank) + ". " + (rankings[indexPath.row].value(forKey:"username") as! String)
+            
+            cell.runsLabel.text = String(runs)
+            
+            cell.inningLabel.text = String(inn)
+            
+            let state = rankings[indexPath.row].value(forKey: "diamond") as! Int
+            
+            cell.diamond.image = stateArray[state]
+            
+            if(indexPath.row == 0){
+                cell.moneyLabel.text = "$10"
+            }else if(indexPath.row == 1){
+                cell.moneyLabel.text = "$5"
+            }else if(indexPath.row < rankings.count){
+                cell.moneyLabel.text = "$0"
+            }
+        }
+        
+        // Configure the cell...
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.array.count
     }
     
     func updateLeaderboard(){
@@ -395,7 +543,7 @@ class GameViewController: ViewController {
     }
     
     func pupTapDetected() {
-        let pupAlert = UIAlertController(title: "Power Innings", message: "There are 3 Power Inning types:\n\nSpeed Demon: Your runners advance an extra base on a hit\n\nAll Triples: Any hit counts as a triple in the game (but not for your Career Stats\n\nDouble Points: All runs count as 2 runs\n\nPower Innings are randomly awarded, and they last until you guess 3 at bats wrong.", preferredStyle: .alert)
+        let pupAlert = UIAlertController(title: "Power Innings", message: "There are 3 Power Inning types:\n\nSpeed Demon: Your runners advance an extra base on a hit\n\nAll Triples: Any hit (except for a home run) counts as a triple in the game (but not for your Career Stats) \n\nDouble Points: All runs count as 2 runs\n\nPower Innings are randomly awarded, and they last until you guess 3 at bats wrong.", preferredStyle: .alert)
         let okAction = UIAlertAction(
         title: "OK", style: UIAlertActionStyle.default) { (action) in
             
@@ -442,7 +590,7 @@ class GameViewController: ViewController {
     }
     func hiTapDetected() {
         print("Hi-Score Clicked")
-        let hiAlert = UIAlertController(title: "Innings", message: "This is your Hi-Score from the current game.  This is the score that will appear on the leaderboard under your username.  Your goal is to get as high a score as possible before you get 27 outs (9 innings).  You win money the higher your score is.", preferredStyle: .alert)
+        let hiAlert = UIAlertController(title: "Hi-Score", message: "This is your Hi-Score from the current game.  This is the score that will appear on the leaderboard under your username.  Your goal is to get as high a score as possible before you get 27 outs (9 innings).  You win money the higher your score is.", preferredStyle: .alert)
         let okAction = UIAlertAction(
         title: "OK", style: UIAlertActionStyle.default) { (action) in
             
@@ -460,7 +608,7 @@ class GameViewController: ViewController {
             self.avg = (self.avg * 1000).rounded() / 1000
             self.slg = (self.slg * 1000).rounded() / 1000
             
-            self.statsText.text = "Career Stats\nAVG: "+String(self.avg)+"\nSLG: "+String(self.slg)
+            self.statsText.text = "Career Stats\nAVG: "+String(self.avg)+" SLG: "+String(self.slg)
         }else{
             self.statsText.text = "Career Stats\nAVG:\nSLG:"
         }
@@ -485,6 +633,9 @@ class GameViewController: ViewController {
         if(outcome == "Home Run"){
             diamond.animationImages = homerDiamondArray;
             runs += 1 + self.diamondState.reduce(0,+)
+            if(self.currPup == 3){
+                runs += 1 + self.diamondState.reduce(0,+)
+            }
             self.runsText.text = "Runs: " + String(self.runs)
             if(self.runs > self.hiscore){
                 self.hiscore = self.runs
@@ -520,6 +671,8 @@ class GameViewController: ViewController {
                 self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(0)
                 self.outs = 0
                 self.inning = self.inning + 1
+                self.currPup = Int(arc4random_uniform(9))
+                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("pup").setValue(self.currPup)
                 if(self.inning > 9){
                     self.runs = 0
                     self.inning = 1
@@ -545,11 +698,43 @@ class GameViewController: ViewController {
             self.diamond.startAnimating()
             self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
             
+            //triples
+        }else if(self.currPup == 2){
+            self.diamond.animationImages = tripleDiamondArray;
+            runs += self.diamondState.reduce(0,+)
+            
+            self.runsText.text = "Runs: " + String(self.runs)
+            if(self.runs > self.hiscore){
+                self.hiscore = self.runs
+                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("hiscore").setValue(self.hiscore)
+                self.hiscoreText.text = "Hi-Score: " + String(self.hiscore)
+            }
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("runs").setValue(self.runs)
+            self.ref.child("users").child((user?.uid)!).child("homers").setValue(self.homers+1)
+            self.ref.child("users").child((user?.uid)!).child("hits").setValue(self.hits+1)
+            self.ref.child("users").child((user?.uid)!).child("atbats").setValue(self.atbats+1)
+            self.homers += 1
+            self.atbats += 1
+            self.hits += 1
+            
+            self.diamondState = [0,0,1]
+            self.runnersMoved = true
+            self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(7)
+            
+            self.diamond.startAnimating()
+            self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
+            
+            
         }else if(outcome == "Single"){
             self.diamond.animationImages = singleDiamondArray;
-            
-            if(self.diamondState[2] == 1){
+            if(self.currPup == 1){
+                self.runs += self.diamondState[2] + self.diamondState[1]
+            }
+            else if(self.diamondState[2] == 1){
                 self.runs += 1
+                if(self.currPup == 3){
+                    runs += 1
+                }
             }
             self.runsText.text = "Runs: " + String(self.runs)
             if(self.runs > self.hiscore){
@@ -564,27 +749,42 @@ class GameViewController: ViewController {
 
             self.atbats += 1
             self.hits += 1
+            if(self.currPup != 1){
+                
             
-            if (self.diamondState == [0,0,0] || self.diamondState == [0,0,1]){
-                self.diamondState = [1,0,0]
-                self.runnersMoved = true
-                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(1)
+                if (self.diamondState == [0,0,0] || self.diamondState == [0,0,1]){
+                    self.diamondState = [1,0,0]
+                    self.runnersMoved = true
+                    self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(1)
                 
-            }else if( self.diamondState == [1,0,0] || self.diamondState == [1,0,1]){
-                self.diamondState = [1,1,0]
-                self.runnersMoved = true
-                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(2)
+                }else if( self.diamondState == [1,0,0] || self.diamondState == [1,0,1]){
+                    self.diamondState = [1,1,0]
+                    self.runnersMoved = true
+                    self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(2)
 
-            }else if( self.diamondState == [0,1,0] || self.diamondState == [0,1,1]){
-                self.diamondState = [1,0,1]
-                self.runnersMoved = true
-                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(3)
+                }else if( self.diamondState == [0,1,0] || self.diamondState == [0,1,1]){
+                    self.diamondState = [1,0,1]
+                    self.runnersMoved = true
+                    self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(3)
                 
-            }else if( self.diamondState == [1,1,1] || self.diamondState == [1,1,0]){
-                self.diamondState = [1,1,1]
-                self.runnersMoved = true
-                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(4)
+                }else if( self.diamondState == [1,1,1] || self.diamondState == [1,1,0]){
+                    self.diamondState = [1,1,1]
+                    self.runnersMoved = true
+                    self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(4)
                 
+                }
+            }else{
+                if (self.diamondState == [0,0,0] || self.diamondState == [0,0,1] || self.diamondState == [0,1,0]){
+                    self.diamondState = [1,0,0]
+                    self.runnersMoved = true
+                    self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(1)
+                    
+                }else if( self.diamondState == [1,1,1] || self.diamondState == [1,1,0] || self.diamondState == [0,1,1] || self.diamondState == [1,0,0] || self.diamondState == [1,0,1]){
+                    self.diamondState = [1,0,1]
+                    self.runnersMoved = true
+                    self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(3)
+                    
+                }
             }
             self.diamond.startAnimating()
             self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
@@ -595,10 +795,21 @@ class GameViewController: ViewController {
             
             if(self.diamondState[2] == 1){
                 self.runs += 1
+                if(self.currPup == 3){
+                    runs += 1
+                }
             }
             if(self.diamondState[1] == 1){
                 self.runs += 1
+                if(self.currPup == 3){
+                    runs += 1
+                }
             }
+            if(self.diamondState[0] == 1 && self.currPup == 1){
+                self.runs += 1
+                
+            }
+            
             self.runsText.text = "Runs: " + String(self.runs)
             if(self.runs > self.hiscore){
                 self.hiscore = self.runs
@@ -613,15 +824,22 @@ class GameViewController: ViewController {
             self.atbats += 1
             self.hits += 1
             
-            if (self.diamondState == [0,0,0] || self.diamondState == [0,0,1] || self.diamondState == [0,1,1] || self.diamondState == [0,1,0]){
+            if(self.currPup != 1){
+            
+                if (self.diamondState == [0,0,0] || self.diamondState == [0,0,1] || self.diamondState == [0,1,1] || self.diamondState == [0,1,0]){
+                    self.diamondState = [0,1,0]
+                    self.runnersMoved = true
+                    self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(5)
+                
+                }else if( self.diamondState == [1,0,0] || self.diamondState == [1,0,1] || self.diamondState == [1,1,0] || self.diamondState == [1,1,1]){
+                    self.diamondState = [0,1,1]
+                    self.runnersMoved = true
+                    self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(6)
+                }
+            }else{
                 self.diamondState = [0,1,0]
                 self.runnersMoved = true
                 self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(5)
-                
-            }else if( self.diamondState == [1,0,0] || self.diamondState == [1,0,1] || self.diamondState == [1,1,0] || self.diamondState == [1,1,1]){
-                self.diamondState = [0,1,1]
-                self.runnersMoved = true
-                self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("diamond").setValue(6)
             }
             
             self.diamond.startAnimating()
@@ -734,36 +952,7 @@ class GameViewController: ViewController {
                 
             }
         }else if(self.pickSubmitted == false){
-            for button in allButtons{
-                
-                
-                button.isHidden = false
-                
-                button.isSelected = false
-                button.isHighlighted = false
-                button.backgroundColor = UIColor.darkGray
-                button.isEnabled = true
-                
-                
-                button.setTitleColor(UIColor.white, for: .disabled)
-                button.setTitleColor(UIColor.black, for: .selected)
-                button.setTitleColor(UIColor.black, for: .highlighted)
-                button.setTitleColor(UIColor.white, for: .normal)
-                
-                
-                
-                hideThirdQsForK()
-                hideThirdQsForAirout()
-                hideThirdQsForSingle()
-                hideThirdQsForLeftSide()
-                hideThirdQsForRightSide()
-                hideThirdQsForNonSingle()
-                hideSecondQsForOnBase()
-                hideSecondQsForAiroutK()
-                hideSecondQsForGroundout()
-                
-                
-            }
+            self.gameStatus.text = "You skipped this AB"
         }
         else if(lastPick == self.lastPlay){
             for button in allButtons{
