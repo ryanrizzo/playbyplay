@@ -112,7 +112,7 @@
 		1541A3771E5BED4F00060466 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1541A3831E5BF89F00060466 /* FirstViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
 		1541A3851E5BF8E400060466 /* GameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
-		15443C1C1ECC7ED000815597 /* MenuButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MenuButton.png; path = ../../../../../../Desktop/MenuButton.png; sourceTree = "<group>"; };
+		15443C1C1ECC7ED000815597 /* MenuButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MenuButton.png; sourceTree = "<group>"; };
 		1561B4361EB8E3F800B29385 /* ProfileTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTableViewController.swift; sourceTree = "<group>"; };
 		156DC1A01E5E1395006D60C3 /* 12pups.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 12pups.png; sourceTree = "<group>"; };
 		156DC1A11E5E1395006D60C3 /* 13pups.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 13pups.png; sourceTree = "<group>"; };
