@@ -10,7 +10,6 @@ import UIKit
 import Firebase
 
 class GameViewController: ViewController, UITableViewDataSource, UITableViewDelegate {
-    @IBOutlet weak var leaderboard: UITextView!
     @IBOutlet weak var last10: UITextView!
     @IBOutlet weak var diamond: UIImageView!
     @IBOutlet weak var powerups: UIImageView!
@@ -130,6 +129,10 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
     
     var currPup : Int?
     
+    let screenWidth  = UIScreen.main.fixedCoordinateSpace.bounds.width
+    
+    let screenHeight = UIScreen.main.fixedCoordinateSpace.bounds.height
+    
     //var pupArray = ["speeddemon", "triples", "doublepoints"]
     
     
@@ -152,6 +155,11 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         
         self.leaderboardTV.backgroundColor = UIColor.darkGray
         self.leaderboardTV.rowHeight = 34
+        self.leaderboardTV.layer.borderColor = UIColor.darkGray.cgColor
+        self.leaderboardTV.layer.borderWidth = 2.0
+        
+        self.last10.layer.borderColor = UIColor.darkGray.cgColor
+        self.last10.layer.borderWidth = 2.0
         
         self.runnersMoved = false
         self.ref = FIRDatabase.database().reference()
@@ -262,6 +270,11 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
                         self.gameStatus.text = "AB in Progress.."
                         self.gameStatus.textColor = UIColor.white
                         self.closeBallot()
+                    }else if(self.lastPlay == "final"){
+                        self.gameStatus.text = "Game has ended."
+                        self.gameStatus.textColor = UIColor.red
+                        self.closeBallot()
+                        self.ref.child("users").child((user?.uid)!).child("inGame").setValue("false")
                     }
                     
                     else if(self.lastPlay != prevPlay){
@@ -294,7 +307,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
                             self.array.append(rest.value as! NSDictionary)
                             
                         }
-                        self.updateLeaderboard()
+                        
                         self.leaderboardTV.reloadData()
                     })
                     
@@ -366,6 +379,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         outsText.addGestureRecognizer(outsTap)
         inningsText.addGestureRecognizer(inningsTap)
         
+
         
         self.resultHistory = [defaults.value(forKey: "1") as! String, defaults.value(forKey: "2") as! String,defaults.value(forKey: "3") as! String,defaults.value(forKey: "4") as! String,defaults.value(forKey:"5") as! String,defaults.value(forKey: "6") as! String,defaults.value(forKey: "7") as! String,defaults.value(forKey: "8") as! String,defaults.value(forKey: "9") as! String,defaults.value(forKey: "10") as! String,]
         
@@ -491,64 +505,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         return self.array.count
     }
     
-    func updateLeaderboard(){
         
-        var rankings = Array(self.array.reversed())
-        
-        if(rankings.count < 10){
-            var i = rankings.count
-            while( i < 10){
-                let blankUser : NSDictionary = ["username": "", "hiscore": 0]
-                rankings.append(blankUser)
-                i += 1
-            }
-        }
-        var i = 0
-        while( i < rankings.count){
-            if(rankings[i].value(forKey: "username") == nil){
-                rankings[i] = ["username": "", "hiscore": 0]
-            }
-            
-            i += 1
-        }
-
-        
-        
-        let firstPlace = rankings[0]
-        let firstUsername = firstPlace.value(forKey: "username") as! String
-        let firstRuns = firstPlace.value(forKey: "hiscore") as! Int
-        let secondPlace = rankings[1]
-        let secondUsername = secondPlace.value(forKey: "username") as! String
-        let secondRuns = secondPlace.value(forKey: "hiscore") as! Int
-        let thirdPlace = rankings[2]
-        let thirdUsername = thirdPlace.value(forKey: "username") as! String
-        let thirdRuns = thirdPlace.value(forKey: "hiscore") as! Int
-        let fourthPlace = rankings[3]
-        let fourthUsername = fourthPlace.value(forKey: "username") as! String
-        let fourthRuns = fourthPlace.value(forKey: "hiscore") as! Int
-        let fifthPlace = rankings[4]
-        let fifthUsername = fifthPlace.value(forKey: "username") as! String
-        let fifthRuns = fifthPlace.value(forKey: "hiscore") as! Int
-        let sixthPlace = rankings[5]
-        let sixthUsername = sixthPlace.value(forKey: "username") as! String
-        let sixthRuns = sixthPlace.value(forKey: "hiscore") as! Int
-        let seventhPlace = rankings[6]
-        let seventhUsername = seventhPlace.value(forKey: "username") as! String
-        let seventhRuns = seventhPlace.value(forKey: "hiscore") as! Int
-        let eighthPlace = rankings[7]
-        let eighthUsername = eighthPlace.value(forKey: "username") as! String
-        let eighthRuns = eighthPlace.value(forKey: "hiscore") as! Int
-        let ninthPlace = rankings[8]
-        let ninthUsername = ninthPlace.value(forKey: "username") as! String
-        let ninthRuns = ninthPlace.value(forKey: "hiscore") as! Int
-        let tenthPlace = rankings[9]
-        let tenthUsername = tenthPlace.value(forKey: "username") as! String
-        let tenthRuns = tenthPlace.value(forKey: "hiscore") as! Int
-        
-        self.leaderboard.text = "1. " + firstUsername + "  Runs: " + String(firstRuns) + "  $10\n" + "2. " + secondUsername + "  Runs: " + String(secondRuns) + "    $5\n" + "3. " + thirdUsername + "  Runs: " + String(thirdRuns) + "    $0\n" + "4. " + fourthUsername + "  Runs: " + String(fourthRuns) + "    $0\n" + "5. " + fifthUsername + "  Runs: " + String(fifthRuns) + "    $0\n" + "6. " + sixthUsername + "  Runs: " + String(sixthRuns) + "    $0\n" + "7. " + seventhUsername + "  Runs: " + String(seventhRuns) + "    $0\n" + "8. " + eighthUsername + "  Runs: " + String(eighthRuns) + "    $0\n" + "9. " + ninthUsername + "  Runs: " + String(ninthRuns) + "    $0\n" + "10. " + tenthUsername + "  Runs: " + String(tenthRuns) + "    $0\n"
-        
-    }
-    
     func last10TapDetected(){
         
     }
@@ -1404,15 +1361,15 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         button.setTitle(event, for: .normal)
         button.setTitle(event, for: .highlighted)
         button.setTitle(event, for: .selected)
-        button.titleLabel?.font = UIFont.init(name: "AvenirNext-Bold", size: 17)
+        button.titleLabel?.font = UIFont.init(name: "AvenirNext-Bold", size: 15)
         button.setTitleColor(UIColor.white, for: .normal)
         button.setTitleColor(UIColor.black, for: .highlighted)
         button.setTitleColor(UIColor.black, for: .selected)
         button.backgroundColor = UIColor.darkGray
         if(spot == 1){
-            button.frame = CGRect(x: 25, y: 526, width: 150, height:57)
+            button.frame = CGRect(x: 24, y: self.screenHeight - 140 , width: self.screenWidth/2 - 38, height:57)
         }else if(spot == 2){
-            button.frame = CGRect(x: 205, y: 526, width: 150, height:57)
+            button.frame = CGRect(x: self.screenWidth * 0.5 + 8, y: self.screenHeight - 140, width: self.screenWidth/2 - 38, height:57)
         }
         
         button.addTarget(self, action: action, for: .touchUpInside)
@@ -1424,15 +1381,15 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         button.setTitle(event, for: .normal)
         button.setTitle(event, for: .highlighted)
         button.setTitle(event, for: .selected)
-        button.titleLabel?.font = UIFont.init(name: "AvenirNext-Bold", size: 17)
+        button.titleLabel?.font = UIFont.init(name: "AvenirNext-Bold", size: 14)
         button.setTitleColor(UIColor.white, for: .normal)
         button.setTitleColor(UIColor.black, for: .highlighted)
         button.setTitleColor(UIColor.black, for: .selected)
         button.backgroundColor = UIColor.darkGray
         if(spot == 1){
-            button.frame = CGRect(x: 25, y: 604, width: 150, height:57)
+            button.frame = CGRect(x: 24, y: self.screenHeight - 65, width: self.screenWidth/2 - 38, height:57)
         }else if(spot == 2){
-            button.frame = CGRect(x: 205, y: 604, width: 150, height:57)
+            button.frame = CGRect(x: self.screenWidth * 0.5 + 8, y: self.screenHeight - 65, width: self.screenWidth/2 - 38, height:57)
         }
         
         button.addTarget(self, action: action, for: .touchUpInside)
