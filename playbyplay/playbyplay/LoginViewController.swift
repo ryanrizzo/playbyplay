@@ -44,7 +44,14 @@ class LoginViewController: ViewController {
                         print(error.localizedDescription)
                     }
 
-                    
+//                    let runner = self.ref.child("users").child((user?.uid)!).child("runner") as! String
+//                    
+//                    if(runner.isEqual("true")){
+//                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//                        let RVC = storyboard.instantiateViewController(withIdentifier: "RVC")
+//                        self.present(RVC, animated: true, completion: nil)
+//                    }
+//                    
                     let inGame = self.ref.child("users").child((user?.uid)!).child("inGame")
 
                     if(inGame.isEqual("true")){

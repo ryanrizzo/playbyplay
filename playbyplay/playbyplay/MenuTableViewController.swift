@@ -10,7 +10,7 @@ import UIKit
 import Firebase
 
 class MenuTableViewController: UITableViewController {
-    var menuItems: [String] = ["Play!", "Leaderboard", "View Profile", "Log Out"]
+    var menuItems: [String] = ["Play!", "Leaderboard", "View Profile","View Tutorial", "Log Out"]
     
     var ref: FIRDatabaseReference!
     var inGame : String = ""
@@ -99,8 +99,13 @@ class MenuTableViewController: UITableViewController {
                 let GVC = storyboard.instantiateViewController(withIdentifier: "GVC")
                 self.present(GVC, animated: true, completion: nil)
             }
+        }else if(indexPath.row == 3){
             
-        } else if(indexPath.row == 3){
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let FTVC = storyboard.instantiateViewController(withIdentifier: "FTVC")
+            self.present(FTVC, animated: true, completion: nil)
+            
+        } else if(indexPath.row == 4){
             
             let logoutAlert = UIAlertController(title: "Are you sure you want to log out?", message: "You will be taken back to the Log In/Sign Up page.", preferredStyle: .alert)
             let cancelAction = UIAlertAction(

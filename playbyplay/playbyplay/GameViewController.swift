@@ -8,8 +8,10 @@
 
 import UIKit
 import Firebase
+import GoogleMobileAds
 
-class GameViewController: ViewController, UITableViewDataSource, UITableViewDelegate {
+
+class GameViewController: ViewController, UITableViewDataSource, UITableViewDelegate, GADInterstitialDelegate {
     @IBOutlet weak var last10: UITextView!
     @IBOutlet weak var diamond: UIImageView!
     @IBOutlet weak var powerups: UIImageView!
@@ -32,6 +34,9 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
     @IBOutlet weak var rulingStatus: UILabel!
     @IBOutlet weak var gameStatus: UILabel!
     
+
+    @IBOutlet weak var pitcherLabel: UILabel!
+    @IBOutlet weak var batterLabel: UILabel!
     var ref: FIRDatabaseReference!
     
     let user = FIRAuth.auth()?.currentUser
@@ -133,9 +138,14 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
     
     let screenHeight = UIScreen.main.fixedCoordinateSpace.bounds.height
     
+    var pitcher : String?
+    var batter : String?
+    
+    var interstitial : GADInterstitial?
+    
     //var pupArray = ["speeddemon", "triples", "doublepoints"]
     
-    
+    var newUser : String?
     
     struct User { //starting with a structure to hold user data
         //var firebaseKey : String?
@@ -152,6 +162,8 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.interstitial = createAndLoadInterstitial()
         
         self.leaderboardTV.backgroundColor = UIColor.darkGray
         self.leaderboardTV.rowHeight = 34
@@ -175,13 +187,27 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
                 self.doubles = currUserDict?.value(forKey: "doubles") as! Int
                 self.homers = currUserDict?.value(forKey: "homers") as! Int
                 self.allTimeHi = currUserDict?.value(forKey: "hiscore") as! Int
+                self.newUser = currUserDict?.value(forKey: "newUser") as! String
                 
+                if( self.newUser == "true"){
+                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                    let FTVC = storyboard.instantiateViewController(withIdentifier: "FTVC")
+                    self.present(FTVC, animated: true, completion: nil)
+                }
+
+            
                 //listen for new plays
                 self.ref.child("games").child(self.currentGame).observe(.value, with: { (snapshot) in
                     let gameDict = snapshot.value as? NSDictionary
                     //prevPlay is to see whether the actual value changed in the database
                     let prevPlay = self.lastPlay
-                    self.lastPlay = gameDict?.value(forKey: "lastPlay") as! String
+                    self.lastPlay = (gameDict?.value(forKey: "lastPlay") as? String)!
+                    
+                    self.pitcher = gameDict?.value(forKey: "pitcher") as? String
+                    self.batter = gameDict?.value(forKey: "batter") as? String
+                    
+                    self.updatePVB()
+                    
                     self.outs = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".outs") as! Int
                     self.runs = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".runs") as! Int
                     self.hiscore = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".hiscore") as! Int
@@ -189,6 +215,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
                     self.inning = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".inning") as! Int
                     self.currPup = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".pup") as? Int
                     
+                    //updates the Last Play: field to let user know what the last outcome was
                     var lpText : String?
                     if(self.lastPlay == "underL"){
                         lpText = "Groundout L Under"
@@ -218,6 +245,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
                         lpText = ""
                     }
                     
+                    //updates powerup signifiers on the screen
                     self.powerups.image = self.pupArray[self.currPup!];
                     if(self.currPup == 1){
                         self.inningsText.textColor = UIColor.init(red: 0.988, green: 0.467, blue: 0.031, alpha: 1)
@@ -241,7 +269,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
                         self.hiscoreText.textColor = UIColor.yellow
                     }
                    
-                    
+                    //makes sure to pull teh diamond data after the database has been updated so that it doesnt store an old state with old values
                     if(self.runnersMoved == false){
                         self.diamondIndex = gameDict?.value(forKeyPath: "leaderboard."+(user?.uid)!+".diamond") as! Int
                         self.diamondState = self.states[self.diamondIndex]
@@ -252,9 +280,9 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
                     
                     self.runsText.text = "Runs: " + String(self.runs)
                     self.outsText.text = "Outs: " + String(self.outs)
-                    self.inningsText.text = "Inning: " + String(self.inning)
+                    self.inningsText.text = "Inning: " + String(self.inning) + " of 6"
                     
-                    
+                    //sets hiscore if necessary
                     if(self.runs > self.hiscore){
                         self.hiscore = self.runs
                     }
@@ -288,14 +316,14 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
                         self.lastPick = ""
                         self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("lastPick").setValue(self.lastPick)
                         self.pickSubmitted = false
-                        //let reversedResults = self.resultHistory.reversed()
+                        
                         self.last10.text = "Your last 10:\n"+self.resultHistory.joined(separator: "\n")
                     }else if( self.lastPlay == "init" ){
                         self.gameStatus.text = "Game has not started"
                         self.gameStatus.textColor = UIColor.white
                     }
                     
-                    
+                    //queries sorted leaderboard for tableView
                     let query = self.ref.child("games").child(self.currentGame).child("leaderboard").queryOrdered(byChild: "hiscore")
                     
                     query.observe(.value, with: { (snapshot) in
@@ -315,24 +343,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
 
                     
                     
-//                    //for leaderboard
-//                    let query = self.ref.child("games").child(self.currentGame).child("leaderboard").queryOrdered(byChild: "runs")
-//                    
-//                    query.observe(.value, with: { (snapshot) in
-//                        var uArray : [User] = []
-//                        for child in snapshot.value as! [String:AnyObject]{
-//                            let runs = child.value["runs"] as! Int
-//                            let username = child.value["username"] as! String
-//                            let u = User(runs: runs, username: username)
-//                            
-//                            uArray.append(u)
-//                            
-//                            
-//                        }
-//                        self.userArray = uArray
-//                        self.updateLeaderboard()
-//                    })
-                    
+
                     
                     
                 }) { (error) in
@@ -360,19 +371,19 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         let runsTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.runsTapDetected)))
         let diamondTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.diamondTapDetected)))
         let pupTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.pupTapDetected)))
-        let last10Tap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.last10TapDetected)))
+        //let last10Tap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.last10TapDetected)))
         let inningsTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.inningsTapDetected)))
         let hiTap = UITapGestureRecognizer(target: self, action: (#selector(GameViewController.hiTapDetected)))
         
         hiTap.numberOfTapsRequired = 1
-        last10Tap.numberOfTapsRequired = 1
+        //last10Tap.numberOfTapsRequired = 1
         pupTap.numberOfTapsRequired = 1
         runsTap.numberOfTapsRequired = 1
         outsTap.numberOfTapsRequired = 1
         diamondTap.numberOfTapsRequired = 1
         inningsTap.numberOfTapsRequired = 1
         hiscoreText.addGestureRecognizer(hiTap)
-        last10.addGestureRecognizer(last10Tap)
+        //last10.addGestureRecognizer(last10Tap)
         powerups.addGestureRecognizer(pupTap)
         diamond.addGestureRecognizer(diamondTap)
         runsText.addGestureRecognizer(runsTap)
@@ -383,20 +394,10 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         
         self.resultHistory = [defaults.value(forKey: "1") as! String, defaults.value(forKey: "2") as! String,defaults.value(forKey: "3") as! String,defaults.value(forKey: "4") as! String,defaults.value(forKey:"5") as! String,defaults.value(forKey: "6") as! String,defaults.value(forKey: "7") as! String,defaults.value(forKey: "8") as! String,defaults.value(forKey: "9") as! String,defaults.value(forKey: "10") as! String,]
         
-        //let reversedResults = self.resultHistory.reversed()
+
         self.last10.text = "Your last 10:\n"+self.resultHistory.joined(separator: "\n")
         
-        //diamond.animationImages = loadDiamondArray;
-        //diamond.animationDuration = 0.65
-        //diamond.animationRepeatCount = 1
-        
-        
-        
-        //powerups.animationImages = loadPupArray
-        //powerups.animationDuration = 0.65
-        //powerups.animationRepeatCount = 1
-        
-        
+
         
         showThirdQsForK()
         showThirdQsForAirout()
@@ -420,8 +421,28 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         
         hideNonSelected()
 
+        
     }
     
+    func createAndLoadInterstitial() -> GADInterstitial {
+        let interstitial = GADInterstitial(adUnitID: "ca-app-pub-1201291908172803/6461517370")
+        interstitial.delegate = self
+        let request = GADRequest()
+        //request.testDevices = [ kGADSimulatorID, "ca-app-pub-3940256099942544/4411468910" ];
+        //ca-app-pub-1201291908172803/6461517370
+        interstitial.load(request)
+        return interstitial
+    }
+    
+    func interstitialDidDismissScreen(_ ad: GADInterstitial) {
+        self.interstitial = createAndLoadInterstitial()
+    }
+    
+//    func fetch(){
+//        viewDidLoad()
+//    }
+    
+    //leaderboard tableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "LCell", for: indexPath) as! LeaderboardTableViewCell
         
@@ -505,11 +526,9 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         return self.array.count
     }
     
-        
-    func last10TapDetected(){
-        
-    }
     
+    
+    //Tutorial tappable interface elements alerts
     func pupTapDetected() {
         let pupAlert = UIAlertController(title: "Power Innings", message: "There are 3 Power Inning types:\n\nSpeed Demon: Your runners advance an extra base on a hit\n\nAll Triples: Any hit (except for a home run) counts as a triple in the game (but not for your Career Stats) \n\nDouble Points: All runs count as 2 runs\n\nPower Innings are randomly awarded, and they last until your inning ends.  You have a 1/3 chance of getting a Power Inning for any given inning.", preferredStyle: .alert)
         let okAction = UIAlertAction(
@@ -548,7 +567,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
     }
     func inningsTapDetected() {
         print("inning Clicked")
-        let inningsAlert = UIAlertController(title: "Innings", message: "You get 9 innings to post as high a score as possible.  Your highest 9-inning score is posted to the leaderboard, and if you score enough runs, you can win a cash prize!", preferredStyle: .alert)
+        let inningsAlert = UIAlertController(title: "Innings", message: "You get 6 innings to post as high a score as possible.  Your highest 6-inning score is posted to the leaderboard, and if you score enough runs, you can win a cash prize!", preferredStyle: .alert)
         let okAction = UIAlertAction(
         title: "OK", style: UIAlertActionStyle.default) { (action) in
             
@@ -558,7 +577,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
     }
     func hiTapDetected() {
         print("Hi-Score Clicked")
-        let hiAlert = UIAlertController(title: "Hi-Score", message: "This is your Hi-Score from the current game.  This is the score that will appear on the leaderboard under your username.  Your goal is to get as high a score as possible before you get 27 outs (9 innings).  You win money the higher your score is.", preferredStyle: .alert)
+        let hiAlert = UIAlertController(title: "Hi-Score", message: "This is your Hi-Score from the current game.  This is the score that will appear on the leaderboard under your username.  Your goal is to get as high a score as possible before you get 18 outs (6 innings).  You win money the higher your score is.", preferredStyle: .alert)
         let okAction = UIAlertAction(
         title: "OK", style: UIAlertActionStyle.default) { (action) in
             
@@ -567,6 +586,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         self.present(hiAlert, animated:true)
     }
     
+    //updates the career stats section of the page so that the user can see updated career stats after each at bat
     func updateStats(){
         print("self.atbats: ",self.atbats)
         if(self.atbats > 0){
@@ -576,12 +596,23 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
             self.avg = (self.avg * 1000).rounded() / 1000
             self.slg = (self.slg * 1000).rounded() / 1000
             
-            self.statsText.text = "Career Stats\nAVG: "+String(self.avg)+" SLG: "+String(self.slg)
+            self.statsText.text = "Your Stats\nAVG: "+String(self.avg)+"\nSLG: "+String(self.slg)
         }else{
-            self.statsText.text = "Career Stats\nAVG:\nSLG:"
+            self.statsText.text = "Your Stats\nAVG:\nSLG:"
+        }
+    }
+
+    func updatePVB(){
+        if(self.pitcher != nil && self.batter != nil){
+            self.pitcherLabel.text = "Pitcher: " + self.pitcher!
+            self.batterLabel.text = "Batter: " + self.batter!
+        }else{
+            self.pitcherLabel.text = "Pitcher:"
+            self.batterLabel.text = "Batter:"
         }
     }
     
+    //closes the ballot for all users.  if no pick has been submitted, it hides all buttons so that no pick can be made
     func closeBallot(){
         let allButtons: [UIButton] = [groundoutButton, airoutKButton, onBaseButton, leftSideButton,rightSideButton,airoutButton,kButton, singleButton,nonSingleButton,overLButton,underLButton,overRButton,underRButton, lfrfButton, cfButton, kSwingingButton, kLookingButton, groundSingleButton, airSingleButton, doubleButton,tripleHomerButton]
 
@@ -597,6 +628,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         
     }
     
+    //calculates runs, new base state, player stats, etc. dependent on what the last outcome was
     func diamondChange(outcome: String){
         if(outcome == "Home Run"){
             diamond.animationImages = homerDiamondArray;
@@ -641,7 +673,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
                 self.inning = self.inning + 1
                 self.currPup = Int(arc4random_uniform(9))
                 self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("pup").setValue(self.currPup)
-                if(self.inning > 9){
+                if(self.inning > 6){
                     self.runs = 0
                     self.inning = 1
                     self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("runs").setValue(self.runs)
@@ -651,9 +683,12 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
                         self.ref.child("users").child((user?.uid)!).child("hiscore").setValue(self.allTimeHi)
                     }
                 }
+                
+               
+            
             }
             self.outsText.text = "Outs: " + String(self.outs)
-            self.inningsText.text = "Inning: " + String(self.inning)
+            self.inningsText.text = "Inning: " + String(self.inning) + " of 6"
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("outs").setValue(self.outs)
             self.ref.child("games").child(self.currentGame).child("leaderboard").child((user?.uid)!).child("inning").setValue(self.inning)
             
@@ -665,6 +700,13 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
             
             self.diamond.startAnimating()
             self.perform(#selector(GameViewController.updateDiamond), with: nil, afterDelay: diamond.animationDuration)
+            if(self.outs == 0){
+                if (self.interstitial?.isReady)! {
+                    self.interstitial?.present(fromRootViewController: self)
+                } else {
+                    print("Ad wasn't ready")
+                }
+            }
             
             //triples
         }else if(self.currPup == 2){
@@ -821,6 +863,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         
     }
     
+    //Updates the diamond image's state and the state value stored in the database
     func updateDiamond(){
         
         self.diamond.stopAnimating()
@@ -862,6 +905,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         
     }
     
+    //Stores the last 10 plays in NSUserDefaults in order to display them in the last10 textfield
     func updateDefaults(outcome: String){
         defaults.set(defaults.value(forKey: "9") , forKey: "10")
         defaults.set(defaults.value(forKey: "8") , forKey: "9")
@@ -881,6 +925,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         self.last10.text = "Your last 10:\n"+self.resultHistory.joined(separator: "\n")
     }
     
+    //Grades plays based on the string in the lastPlay key of the database.  If "next", then the button options are presented to the user.
     func gradePlay(){
         
         let allButtons: [UIButton] = [groundoutButton, airoutKButton, onBaseButton, leftSideButton,rightSideButton,airoutButton,kButton, singleButton,nonSingleButton,overLButton,underLButton,overRButton,underRButton, lfrfButton, cfButton, kSwingingButton, kLookingButton, groundSingleButton, airSingleButton, doubleButton,tripleHomerButton]
@@ -1103,7 +1148,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
         }
             
             
-            //************** SINGLE OUTCOMES BUD! ***********************************
+            //single outcomes
             //single for groundoutL selection
         else if(groundoutLOutcomes.contains(lastPick) && (groundoutLOutcomes.contains(self.lastPlay) || groundoutROutcomes.contains(self.lastPlay))){
             for button in allButtons{
@@ -1356,7 +1401,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
 
     }
     
-    
+    //initiate the second and third tier question buttons
     func initiateButton(event: String, button: UIButton, action:Selector, spot: Int){
         button.setTitle(event, for: .normal)
         button.setTitle(event, for: .highlighted)
@@ -1849,7 +1894,7 @@ class GameViewController: ViewController, UITableViewDataSource, UITableViewDele
     
     
     //********************************************************
-    
+    //Hides non-selected buttons
     func hideNonSelected(){
         let allButtons: [UIButton] = [groundoutButton, airoutKButton, onBaseButton, leftSideButton,rightSideButton,airoutButton,kButton, singleButton,nonSingleButton,overLButton,underLButton,overRButton,underRButton, lfrfButton, cfButton, kSwingingButton, kLookingButton, groundSingleButton, airSingleButton, doubleButton,tripleHomerButton]
         

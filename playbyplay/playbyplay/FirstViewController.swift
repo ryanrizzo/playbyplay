@@ -11,6 +11,9 @@ import Firebase
 
 class FirstViewController: ViewController {
 
+    @IBOutlet weak var signup: UIButton!
+    @IBOutlet weak var login: UIButton!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     var inGame : String = ""
     
     
@@ -32,11 +35,37 @@ class FirstViewController: ViewController {
             print(FIRAuth.auth()?.currentUser?.email)
             let user = FIRAuth.auth()?.currentUser
             
+            self.ref.child("users").observeSingleEvent(of: .value, with: { (snapshot)
+                in
+                if snapshot.hasChild((user?.uid)!){
+                    
+                    print("\n\n\n\n\n\n\n\n\n\n\n\nuser exists\n")
+                    
+                }else{
+                    
+                    print("\n\n\n\n\n\n\n\n\n\n\n\nuser does not exists\n")
+                    
+                    self.activityIndicator.stopAnimating()
+                    self.signup.isEnabled = true
+                    self.login.isEnabled = true
+                    
+                }
+                
+                
+            })
+            
             self.ref.child("users").child((user?.uid)!).observeSingleEvent(of: .value, with: { (snapshot) in
                 let value = snapshot.value as? NSDictionary
                 self.inGame = value?["inGame"] as? String ?? ""
                 print("\n\n\n\n\n\n\n\n\n\n\n\ninGame:\n",self.inGame)
+//                let runner = value?["runner"] as? String ?? ""
                 
+//                if( runner.isEqual("true")){
+//                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//                    let RVC = storyboard.instantiateViewController(withIdentifier: "RVC")
+//                    self.present(RVC, animated: true, completion: nil)
+//                }
+//                
                 if(self.inGame.isEqual("true")){
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
                     let GVC = storyboard.instantiateViewController(withIdentifier: "GVC")
@@ -49,14 +78,29 @@ class FirstViewController: ViewController {
                     let MTVC = storyboard.instantiateViewController(withIdentifier: "MTVC")
                     let MNC = UINavigationController(rootViewController: MTVC)
                     self.present(MNC, animated: true, completion: nil)
+                }else{
+                    self.activityIndicator.stopAnimating()
+                    self.signup.isEnabled = true
+                    self.login.isEnabled = true
                 }
                 
             }) { (error) in
                 print(error.localizedDescription)
+                self.activityIndicator.stopAnimating()
+                self.signup.isEnabled = true
+                self.login.isEnabled = true
+                
             }
             
+        }else{
+            self.activityIndicator.stopAnimating()
+            self.signup.isEnabled = true
+            self.login.isEnabled = true
         }
 
+        self.activityIndicator.stopAnimating()
+        self.signup.isEnabled = true
+        self.login.isEnabled = true
 
     }
     

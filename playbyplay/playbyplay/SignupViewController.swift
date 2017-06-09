@@ -24,8 +24,23 @@ class SignupViewController: ViewController {
         super.viewDidLoad()
         self.ref = FIRDatabase.database().reference()
         // Do any additional setup after loading the view.
+        
+        //Looks for single or multiple taps.
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(SignupViewController.dismissKeyboard))
+        
+        //Uncomment the line below if you want the tap not not interfere and cancel other interactions.
+        //tap.cancelsTouchesInView = false
+        
+        view.addGestureRecognizer(tap)
     }
 
+    //Calls this function when the tap is recognized.
+    func dismissKeyboard() {
+        //Causes the view (or one of its embedded text fields) to resign the first responder status.
+        view.endEditing(true)
+    }
+    
+    //initiates all user values at necessary values
     @IBAction func signup(_ sender: UIButton) {
         if(password.text==passwordCheck.text && email.text != "" && username.text != ""){
             FIRAuth.auth()?.createUser(withEmail: email.text!, password: password.text!) { (user,error) in
@@ -44,6 +59,9 @@ class SignupViewController: ViewController {
                     self.ref.child("users").child((user?.uid)!).child("homers").setValue(0)
                     self.ref.child("users").child((user?.uid)!).child("money").setValue(0)
                     self.ref.child("users").child((user?.uid)!).child("hiscore").setValue(0)
+                    
+                    self.ref.child("users").child((user?.uid)!).child("runner").setValue("false")
+                    self.ref.child("users").child((user?.uid)!).child("newUser").setValue("true")
 
                     self.defaults.set("", forKey: "1")
                     self.defaults.set(self.defaults.value(forKey: "1") , forKey: "10")
@@ -63,7 +81,7 @@ class SignupViewController: ViewController {
                     self.present(MNC, animated: true, completion: nil)
                     
                 } else {
-                    let invalidAlert = UIAlertController(title: "Invalid Entry", message: "Sign Up Failed. Check if you entered a valid email, otherwise you may have taken a username that already exists, or chosen a bad password.", preferredStyle: UIAlertControllerStyle.alert)
+                    let invalidAlert = UIAlertController(title: "Invalid Entry", message: "Sign Up Failed. Password must be 6 characters. Also make sure your email is a valid address.", preferredStyle: UIAlertControllerStyle.alert)
                     invalidAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
                     self.present(invalidAlert, animated: true, completion: nil)
                 }
@@ -71,10 +89,14 @@ class SignupViewController: ViewController {
                 
             }
         }
-        else{
-            let invalidAlert = UIAlertController(title: "Invalid Entry", message: "One of the text fields is incorrect", preferredStyle: UIAlertControllerStyle.alert)
+        else if(password.text != passwordCheck.text){
+            let invalidAlert = UIAlertController(title: "Invalid Entry", message: "Your two password entries do not match", preferredStyle: UIAlertControllerStyle.alert)
             invalidAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
                 self.present(invalidAlert, animated: true, completion: nil)
+        }else{
+            let invalidAlert = UIAlertController(title: "Invalid Entry", message: "You either entered an incorrect email, or that email already has an account.", preferredStyle: UIAlertControllerStyle.alert)
+            invalidAlert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+            self.present(invalidAlert, animated: true, completion: nil)
         }
             
     
